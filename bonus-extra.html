@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#064e3b">
+  <title>CashNoPix - Bônus Especial</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="style.css">
+<script src="pixel.js"></script>
+</head>
+<body>
+
+<div id="particles" style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;"></div>
+
+<div class="bonus-extra-page">
+  <div class="bonus-extra-card">
+
+    <div class="bonus-extra-icon">🎁</div>
+
+    <span class="bonus-guaranteed-badge">BÔNUS GARANTIDO</span>
+
+    <h1 class="bonus-extra-title">🎉 Parabéns!</h1>
+    <p class="bonus-extra-desc">
+      Você foi selecionado para receber um <strong>BÔNUS ESPECIAL</strong> exclusivo por completar 3 avaliações!
+    </p>
+
+    <div class="balance-row">
+      <span class="balance-row-label">Saldo atual:</span>
+      <span class="balance-row-value" id="saldoAtual">R$ 0,00</span>
+    </div>
+
+    <div class="special-divider">
+      <span>✨</span><span>BÔNUS ESPECIAL</span><span>✨</span>
+    </div>
+
+    <div class="bonus-gift-row">
+      <span class="bonus-gift-label">Bônus Garantido:</span>
+      <span class="bonus-gift-value" id="bonusGift">+ R$ 0,00</span>
+    </div>
+
+    <button class="btn-orange" id="btnReceber" onclick="receberBonus(event)">
+      ✨ Receber Bônus Especial!
+    </button>
+
+  </div>
+</div>
+
+<script src="sounds.js"></script>
+<script src="backredirect.js"></script>
+<script>
+  let state = JSON.parse(localStorage.getItem('cnp') || '{}');
+  if (!state.balance) state.balance = 176;
+
+  // Bônus extra fixo — garante total de R$467,83 ao final
+  const bonusAmt = 163.00;
+
+  document.getElementById('saldoAtual').textContent = 'R$ ' + state.balance.toFixed(2).replace('.', ',');
+  document.getElementById('bonusGift').textContent  = '+ R$ ' + bonusAmt.toFixed(2).replace('.', ',');
+
+  // Fanfare on page load
+  setTimeout(() => SFX.fanfare(), 350);
+
+  // Particles
+  const emojis = ['🎉','✨','🎊','💰','⭐','🤑','💸'];
+  const pCont  = document.getElementById('particles');
+  function spawnParticle() {
+    const el = document.createElement('div');
+    el.className = 'floating-particle';
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    el.style.left = (Math.random() * 100) + 'vw';
+    el.style.animationDuration = (5 + Math.random() * 6) + 's';
+    el.style.fontSize = (14 + Math.random() * 14) + 'px';
+    pCont.appendChild(el);
+    setTimeout(() => el.remove(), 12000);
+  }
+  for (let i = 0; i < 10; i++) setTimeout(spawnParticle, i * 150);
+  setInterval(spawnParticle, 1500);
+
+  function addRipple(e, el) {
+    const r = document.createElement('div');
+    r.className = 'ripple';
+    const rect  = el.getBoundingClientRect();
+    const touch = e.changedTouches?.[0] ?? e;
+    r.style.left = (touch.clientX - rect.left - 2) + 'px';
+    r.style.top  = (touch.clientY - rect.top  - 2) + 'px';
+    el.appendChild(r);
+    setTimeout(() => r.remove(), 600);
+  }
+
+  function receberBonus(e) {
+    addRipple(e, e.currentTarget);
+    SFX.coin();
+    const btn = document.getElementById('btnReceber');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Aguarde...';
+    state.balance  += bonusAmt;
+    state.bonusExtra = bonusAmt;
+    localStorage.setItem('cnp', JSON.stringify(state));
+    setTimeout(() => { window.location.href = 'codigo.html'; }, 700);
+  }
+</script>
+</body>
+</html>

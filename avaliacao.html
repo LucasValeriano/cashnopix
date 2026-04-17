@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0f172a">
+  <title>CashNoPix - Avaliação</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Product card slide-out / slide-in (identical to original) */
+    @keyframes slideOutLeft {
+      from { transform: translate3d(0,0,0); opacity: 1; }
+      to   { transform: translate3d(-110%,0,0); opacity: 0; }
+    }
+    @keyframes slideInRight {
+      from { transform: translate3d(110%,0,0); opacity: 0; }
+      to   { transform: translate3d(0,0,0);   opacity: 1; }
+    }
+    @keyframes slideOutRight {
+      from { transform: translate3d(0,0,0); opacity: 1; }
+      to   { transform: translate3d(110%,0,0); opacity: 0; }
+    }
+    @keyframes slideInLeft {
+      from { transform: translate3d(-110%,0,0); opacity: 0; }
+      to   { transform: translate3d(0,0,0);    opacity: 1; }
+    }
+    .card-slide-out-left  { animation: slideOutLeft  0.28s cubic-bezier(0.4,0,1,1) both; }
+    .card-slide-in-right  { animation: slideInRight  0.32s cubic-bezier(0,0,0.2,1) 0.22s both; }
+    .card-slide-out-right { animation: slideOutRight 0.28s cubic-bezier(0.4,0,1,1) both; }
+    .card-slide-in-left   { animation: slideInLeft   0.32s cubic-bezier(0,0,0.2,1) 0.22s both; }
+
+    /* Button pressed flash */
+    .btn-liked:active, .btn-liked.pressed    { filter: brightness(1.15); transform: scale(0.97); }
+    .btn-disliked:active, .btn-disliked.pressed { filter: brightness(1.1); transform: scale(0.97); }
+    .btn-neutral:active, .btn-neutral.pressed   { background: #f1f5f9; }
+  </style>
+<script src="pixel.js"></script>
+</head>
+<body>
+
+<nav class="app-nav">
+  <span class="nav-logo">CashNoPix</span>
+  <span class="nav-balance" id="navBal">R$ 0,00</span>
+</nav>
+
+<div class="progress-section">
+  <p class="progress-text">Seu progresso: <span id="progLabel">0/6</span></p>
+  <div class="progress-track">
+    <div class="progress-fill" id="progFill" style="width:0%"></div>
+  </div>
+</div>
+
+<div class="avaliacao-page">
+  <p class="avaliacao-header">Receba seu cashback em forma de PIX na sua conta!</p>
+
+  <!-- Product Card -->
+  <div class="product-card" id="prodCard">
+    <div class="product-img-wrap" id="prodImgWrap">
+      <!-- Img loaded dynamically with multi-source fallback -->
+      <img id="prodImg" src="" alt="" loading="eager">
+      <div id="prodEmoji" class="product-emoji-fallback"></div>
+    </div>
+    <div class="product-info">
+      <p class="product-question">O que você achou do produto?</p>
+      <h2 class="product-name" id="prodName"></h2>
+      <span class="store-badge" id="prodStore"></span>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="eval-buttons">
+    <button class="btn-liked"    id="bLiked"    onclick="avaliar('liked',event)">Eu gostei</button>
+    <button class="btn-neutral"  id="bNeutral"  onclick="avaliar('neutral',event)">Eu não gostei</button>
+    <button class="btn-disliked" id="bDisliked" onclick="avaliar('disliked',event)">Nunca compraria</button>
+  </div>
+</div>
+
+<!-- TOAST NOTIFICATION -->
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <img class="toast-avatar" id="toastAvatar" src="" alt=""
+       onerror="this.style.background='#e2e8f0';this.src='';">
+  <div class="toast-body">
+    <div class="toast-name"   id="toastName">Fernando Costa</div>
+    <div class="toast-status">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      Acabou de receber
+    </div>
+    <div class="toast-amount" id="toastAmt">R$423,75</div>
+  </div>
+  <img class="toast-img" id="toastImg" src="" alt=""
+       onerror="this.style.display='none'">
+</div>
+
+<!-- CREDIT MODAL -->
+<div class="overlay" id="creditOverlay" style="display:none;" role="dialog" aria-modal="true">
+  <div class="credit-modal">
+    <div class="credit-check">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+    <h2 class="credit-title">Valor Creditado!</h2>
+    <p class="credit-sub">Avaliação registrada com sucesso</p>
+    <div class="credit-amt-box">
+      <p class="credit-amt-label">Valor adicionado:</p>
+      <p class="credit-amt-value" id="creditAmt">+ R$ 0,00</p>
+    </div>
+    <div class="credit-bal-row">
+      <span class="credit-bal-label">Saldo total:</span>
+      <span class="credit-bal-value" id="creditBal">R$ 0,00</span>
+    </div>
+    <button class="btn-green" onclick="continuar(event)">Continuar</button>
+  </div>
+</div>
+
+<script src="sounds.js"></script>
+<script src="backredirect.js"></script>
+<script>
+/* =============================================
+   PRODUCT DATA — images from Unsplash
+   (free, no auth, optimized by w= and q=)
+   ============================================= */
+const PRODUCTS = [
+  {
+    name: 'Jogo de panelas',
+    store: 'Americanas',
+    bg: 'pb-panelas',
+    emoji: '🍳',
+    src: 'img/panelas.png',
+    thumb: 'img/panelas.png',
+    amt: 46.39
+  },
+  {
+    name: 'Ar Condicionado',
+    store: 'Springer',
+    bg: 'pb-arcond',
+    emoji: '❄️',
+    src: 'img/arcond.png',
+    thumb: 'img/arcond.png',
+    amt: 43.66
+  },
+  {
+    name: 'Geladeira Bs43',
+    store: 'Electrolux',
+    bg: 'pb-geladeira',
+    emoji: '🧊',
+    src: 'img/geladeira.png',
+    thumb: 'img/geladeira.png',
+    amt: 37.92
+  },
+  {
+    name: 'Galaxy S24 Ultra',
+    store: 'Samsung',
+    bg: 'pb-samsung',
+    emoji: '📱',
+    src: 'img/samsung.png',
+    thumb: 'img/samsung.png',
+    amt: 41.28
+  },
+  {
+    name: 'Fogão 5 bocas',
+    store: 'Casas Bahia',
+    bg: 'pb-fogao',
+    emoji: '🔥',
+    src: 'img/fogao.png',
+    thumb: 'img/fogao.png',
+    amt: 38.50
+  },
+  {
+    name: 'Smart TV 55"',
+    store: 'LG',
+    bg: 'pb-tv',
+    emoji: '📺',
+    src: 'img/tv.png',
+    thumb: 'img/tv.png',
+    amt: 49.82
+  }
+];
+
+/* Avatar pool (pravatar — reliable, fast) */
+const AVATARS = Array.from({length:10}, (_,i) => `https://i.pravatar.cc/48?img=${i+10}`);
+
+const NOTIFS = [
+  { name:'Fernando Costa',   amt:423.75 },
+  { name:'Tatiana Lima',     amt:412.65 },
+  { name:'Carlos Souza',     amt:398.20 },
+  { name:'Maria Fernanda',   amt:456.80 },
+  { name:'Roberto Alves',    amt:387.50 },
+  { name:'Ana Paula',        amt:441.30 },
+  { name:'Joel Mendes',      amt:419.90 },
+  { name:'Daniela Souza',    amt:403.10 },
+];
+
+/* ================================================
+   STATE
+   ================================================ */
+let state = JSON.parse(localStorage.getItem('cnp') || '{}');
+if (!state.balance) state = { balance: 467, round: 0 };
+let round = state.round || 0;
+
+/* ================================================
+   RENDER CURRENT PRODUCT
+   ================================================ */
+function renderProduct() {
+  const prod = PRODUCTS[round] ?? PRODUCTS[PRODUCTS.length-1];
+  const wrap  = document.getElementById('prodImgWrap');
+  const img   = document.getElementById('prodImg');
+  const emoji = document.getElementById('prodEmoji');
+
+  // Set background class
+  wrap.className = `product-img-wrap ${prod.bg}`;
+
+  // Reset visuals
+  img.style.opacity  = '0';
+  emoji.style.display = 'none';
+  emoji.textContent   = prod.emoji;
+  img.src             = '';        // force re-trigger
+
+  // Load with smooth fade-in
+  const i = new Image();
+  i.onload = () => {
+    img.src = prod.src;
+    img.style.transition = 'opacity 0.45s ease';
+    requestAnimationFrame(() => { img.style.opacity = '1'; });
+  };
+  i.onerror = () => {
+    img.style.display = 'none';
+    emoji.style.display = 'flex';
+  };
+  i.src = prod.src;
+
+  // Prefetch next product image
+  if (PRODUCTS[round+1]) {
+    const pre = new Image();
+    pre.src = PRODUCTS[round+1].src;
+  }
+
+  document.getElementById('prodName').textContent  = prod.name;
+  document.getElementById('prodStore').textContent = prod.store;
+  document.getElementById('navBal').textContent    = 'R$ ' + state.balance.toFixed(2).replace('.', ',');
+  document.getElementById('progLabel').textContent = round + '/6';
+  document.getElementById('progFill').style.width  = (round / 6 * 100) + '%';
+}
+
+renderProduct();
+
+/* ================================================
+   TOAST QUEUE
+   ================================================ */
+let toastBusy = false;
+const toastQueue = [...NOTIFS].sort(() => Math.random() - 0.5);
+let toastIdx = 0;
+
+function showNextToast() {
+  if (toastBusy) return;
+  const d = toastQueue[toastIdx % toastQueue.length];
+  toastIdx++;
+  toastBusy = true;
+
+  const randProd   = PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)];
+  const randAvatar = AVATARS[Math.floor(Math.random() * AVATARS.length)];
+
+  document.getElementById('toastName').textContent = d.name;
+  document.getElementById('toastAmt').textContent  = 'R$' + d.amt.toFixed(2).replace('.', ',');
+  document.getElementById('toastAvatar').src       = randAvatar;
+  document.getElementById('toastImg').src          = randProd.thumb;
+
+  const el = document.getElementById('toast');
+  el.classList.add('show');
+  SFX.pop();
+
+  setTimeout(() => {
+    el.classList.remove('show');
+    setTimeout(() => { toastBusy = false; }, 550);
+  }, 4000);
+}
+
+// Start notifications: first at 2.5s then every 8–12s
+setTimeout(showNextToast, 2500);
+setInterval(showNextToast, 9000);
+
+/* ================================================
+   RIPPLE HELPER
+   ================================================ */
+function addRipple(e, el) {
+  const r    = document.createElement('div');
+  r.className = 'ripple';
+  const rect  = el.getBoundingClientRect();
+  const touch = e.changedTouches?.[0] ?? e;
+  r.style.left = (touch.clientX - rect.left - 2) + 'px';
+  r.style.top  = (touch.clientY - rect.top - 2)  + 'px';
+  el.appendChild(r);
+  setTimeout(() => r.remove(), 600);
+}
+
+/* ================================================
+   EVALUATE — slide-out then credit modal
+   ================================================ */
+let evaluating = false;
+
+function avaliar(type, e) {
+  if (evaluating) return;
+  evaluating = true;
+
+  addRipple(e, e.currentTarget);
+  SFX.coin();
+
+  // Visual feedback on the clicked button
+  e.currentTarget.classList.add('pressed');
+
+  // Disable all buttons immediately
+  ['bLiked','bNeutral','bDisliked'].forEach(id => {
+    const b = document.getElementById(id);
+    b.disabled = true;
+    b.style.pointerEvents = 'none';
+  });
+
+  const prod = PRODUCTS[round] ?? PRODUCTS[PRODUCTS.length - 1];
+  const amt  = prod.amt;
+
+  // ── STEP 1: Slide card OUT to the left (identical to original) ──
+  const card = document.getElementById('prodCard');
+  card.classList.add('card-slide-out-left');
+
+  setTimeout(() => {
+    // ── STEP 2: Update state ──
+    state.balance += amt;
+    round++;
+    state.round = round;
+    localStorage.setItem('cnp', JSON.stringify(state));
+
+    // Flash balance badge
+    const navBal = document.getElementById('navBal');
+    navBal.textContent = 'R$ ' + state.balance.toFixed(2).replace('.', ',');
+    navBal.classList.add('flash');
+    setTimeout(() => navBal.classList.remove('flash'), 550);
+
+    // ── STEP 3: Show credit modal ──
+    document.getElementById('creditAmt').textContent = '+ R$ ' + amt.toFixed(2).replace('.', ',');
+    document.getElementById('creditBal').textContent = 'R$ '   + state.balance.toFixed(2).replace('.', ',');
+    document.getElementById('creditOverlay').style.display = 'flex';
+    SFX.kaching();
+  }, 260);
+}
+
+function continuar(e) {
+  SFX.click();
+  document.getElementById('creditOverlay').style.display = 'none';
+
+  // ── Route to next screen ──
+  if (round >= 6) {
+    window.location.href = 'cadastro.html';
+    return;
+  }
+  if (round === 3) {
+    window.location.href = 'bonus-extra.html';
+    return;
+  }
+
+  // ── Slide NEW product card IN from the right ──
+  const card = document.getElementById('prodCard');
+  card.classList.remove('card-slide-out-left');
+
+  // Render next product (hidden off-screen right)
+  renderProduct();
+
+  // Force reflow so animation triggers
+  card.getBoundingClientRect();
+  card.classList.add('card-slide-in-right');
+
+  // Re-enable buttons after animation
+  setTimeout(() => {
+    card.classList.remove('card-slide-in-right');
+    evaluating = false;
+    ['bLiked','bNeutral','bDisliked'].forEach(id => {
+      const b = document.getElementById(id);
+      b.disabled = false;
+      b.style.pointerEvents = '';
+      b.classList.remove('pressed');
+    });
+  }, 580);
+}
+</script>
+</body>
+</html>

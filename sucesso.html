@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#16a34a">
+  <title>CashNoPix - Saque Liberado!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="style.css">
+<script src="pixel.js"></script>
+</head>
+<body class="sucesso-page">
+
+<div class="sucesso-header">
+  <div class="check-icon">✓</div>
+  <h1>SAQUE LIBERADO!</h1>
+  <p>Seu pagamento foi confirmado com sucesso.</p>
+</div>
+
+<div class="sucesso-card">
+  <div class="sucesso-info">
+    <div class="info-row">
+      <span>Valor do Saque:</span>
+      <strong id="finalBal">R$ 467,83</strong>
+    </div>
+    <div class="info-row">
+      <span>Status:</span>
+      <span class="status-badge">Concluído</span>
+    </div>
+    <div class="info-row">
+      <span>Previsão:</span>
+      <strong>Hoje, em até 2 horas</strong>
+    </div>
+  </div>
+
+  <div class="sucesso-steps">
+    <div class="step-line active">
+      <div class="step-dot"></div>
+      <div>
+        <div class="step-t">Taxa de Validação</div>
+        <div class="step-s">Confirmada via PIX</div>
+      </div>
+    </div>
+    <div class="step-line active">
+      <div class="step-dot"></div>
+      <div>
+        <div class="step-t">Verificação de Conta</div>
+        <div class="step-s">Em processamento...</div>
+      </div>
+    </div>
+    <div class="step-line">
+      <div class="step-dot"></div>
+      <div>
+        <div class="step-t">Transferência Transferida</div>
+        <div class="step-s">Aguardando fila de envio</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert-success">
+    🚨 <strong>Atenção:</strong> Você receberá uma notificação no seu WhatsApp assim que o valor cair na conta PIX cadastrada.
+  </div>
+
+  <button class="btn-green" onclick="window.location.href='index.html'">
+    Voltar para o Início
+  </button>
+</div>
+
+<script src="sounds.js"></script>
+<script>
+  window.onload = () => {
+    SFX.success();
+    const state = JSON.parse(localStorage.getItem('cnp') || '{}');
+    if (state.balance) {
+      document.getElementById('finalBal').textContent = 'R$ ' + state.balance.toFixed(2).replace('.', ',');
+    }
+  };
+</script>
+
+</body>
+</html>
