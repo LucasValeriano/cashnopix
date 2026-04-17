@@ -1022,12 +1022,22 @@ body {
   justify-content: center; gap: 8px; flex-wrap: wrap;
 }
 
-/* PIX Modal */
+/* PIX Modal — usa opacity+pointer-events para que a animação sheetUp
+   funcione em qualquer posição de scroll (display:none cancela a animação) */
 .pix-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.65);
-  display: flex; align-items: flex-end; justify-content: center;  /* sheet from bottom on mobile */
+  display: flex; align-items: flex-end; justify-content: center;
   z-index: 500; padding: 0;
-  animation: fadeIn 0.22s ease both;
+  /* Estado padrão: invisível mas ainda participa do layout */
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+.pix-overlay.pix-open {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
 }
 /* On wider screens center it */
 @media (min-width: 640px) {
@@ -1041,19 +1051,43 @@ body {
   width: 100%; max-width: 480px;
   position: relative;
   box-shadow: 0 -16px 40px rgba(0,0,0,0.25);
-  animation: sheetUp 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.pix-overlay.pix-open .pix-card {
+  transform: translateY(0);
 }
 @media (min-width: 640px) {
   .pix-card {
     border-radius: 24px;
     box-shadow: 0 24px 56px rgba(0,0,0,0.3);
-    animation: modalPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    transform: scale(0.88) translateY(24px);
+  }
+  .pix-overlay.pix-open .pix-card {
+    transform: scale(1) translateY(0);
   }
 }
-@keyframes sheetUp {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
+
+/* Elementos internos do header do modal */
+.pix-icon {
+  font-size: 36px; text-align: center; margin-bottom: 6px;
 }
+.pix-title {
+  font-size: 20px; font-weight: 800; color: var(--slate-900);
+  text-align: center; margin-bottom: 4px;
+}
+.pix-timer {
+  font-size: 13px; color: var(--slate-500); text-align: center;
+  margin-bottom: 8px;
+}
+.pix-timer span { font-weight: 700; color: var(--red); }
+.pix-desc {
+  font-size: 14px; color: var(--slate-600); text-align: center;
+  margin-bottom: 16px; line-height: 1.6;
+}
+.pix-desc strong { color: var(--green); }
 
 .pix-handle {
   width: 36px; height: 4px;

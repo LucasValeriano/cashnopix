@@ -37,19 +37,20 @@
     let currentLevel = 0;
     let isModalOpen = false;
 
-    // Injetar CSS globalmente para garantir que o modal apareça acima de tudo
     const style = document.createElement('style');
     style.innerHTML = `
         #br-overlay {
             position: fixed !important;
             inset: 0 !important;
-            z-index: 2147483647 !important; /* Valor máximo de z-index */
+            z-index: 2147483647 !important;
             background: rgba(0,0,0,0.85) !important;
-            display: none;
+            display: flex !important;          /* sempre flex, visibilidade controlada por opacity */
             align-items: flex-end !important;
             justify-content: center !important;
             opacity: 0;
-            transition: opacity 0.3s ease !important;
+            pointer-events: none;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease !important;
             font-family: 'Inter', -apple-system, sans-serif !important;
             -webkit-font-smoothing: antialiased;
         }
@@ -62,8 +63,14 @@
             transform: translateY(100%);
             transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
             box-sizing: border-box !important;
+            max-height: 90vh !important;
+            overflow-y: auto !important;
         }
-        #br-overlay.br-active { display: flex !important; opacity: 1 !important; }
+        #br-overlay.br-active {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            visibility: visible !important;
+        }
         #br-overlay.br-active #br-modal { transform: translateY(0) !important; }
         
         .br-title { font-size: 22px !important; font-weight: 900 !important; color: #0f172a !important; margin: 0 0 8px !important; text-align: center !important; }
