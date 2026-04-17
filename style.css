@@ -60,13 +60,13 @@ input, select, textarea {
   font-family: 'Inter', sans-serif;
 }
 
-/* Page entry animation */
+/* Page entry animation — removed transform because it breaks position:fixed for children */
 body {
   animation: pageIn 0.3s ease both;
 }
 @keyframes pageIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* ============================================
@@ -998,10 +998,13 @@ body {
 .cta-sticky {
   position: fixed; bottom: 0; left: 0; right: 0;
   background: #fff; border-top: 1px solid var(--slate-200);
-  padding: 12px var(--px);
-  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  /* padding top: 12px, horizontal: var(--px), bottom: calc(12px + safe-area) */
+  padding: 12px var(--px) calc(12px + env(safe-area-inset-bottom, 0px));
   z-index: 100;
   box-shadow: 0 -6px 28px rgba(0,0,0,0.09);
+  /* Extends background below the screen bounds just in case */
+  margin-bottom: -100px;
+  padding-bottom: calc(100px + 12px + env(safe-area-inset-bottom, 0px));
 }
 .cta-btn {
   position: relative; overflow: hidden;
@@ -1025,9 +1028,12 @@ body {
 /* PIX Modal — usa opacity+pointer-events para que a animação sheetUp
    funcione em qualquer posição de scroll (display:none cancela a animação) */
 .pix-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.65);
-  display: flex; align-items: flex-end; justify-content: center;
-  z-index: 500; padding: 0;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: flex !important; 
+  align-items: flex-end !important; /* Force bottom on mobile */
+  justify-content: center;
+  z-index: 9999; /* Stay above everything */
+  padding: 0;
   /* Estado padrão: invisível mas ainda participa do layout */
   opacity: 0;
   pointer-events: none;
@@ -1047,24 +1053,20 @@ body {
   background: #fff;
   border-radius: 24px 24px 0 0;
   padding: 28px var(--px);
-  padding-bottom: max(36px, env(safe-area-inset-bottom));
+  /* Extends background 100px below the screen to cover any white gaps/safe area transitions */
+  margin-bottom: -100px;
+  padding-bottom: calc(100px + 28px + env(safe-area-inset-bottom, 15px));
   width: 100%; max-width: 480px;
   position: relative;
-  box-shadow: 0 -16px 40px rgba(0,0,0,0.25);
+  box-shadow: 0 -20px 50px rgba(0,0,0,0.3);
   transform: translateY(100%);
   transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
-  max-height: 90vh;
+  max-height: 94vh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
-/* Preenche o espaço vazio abaixo do card no iPhone/Android com home bar */
-.pix-card::after {
-  content: '';
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: env(safe-area-inset-bottom, 0px);
-  background: #fff;
-  z-index: 1;
-}
+/* No white gaps below the card — the background of the overlay handles the rest if needed, 
+   but padding-bottom + env covers the home indicator area */
 .pix-overlay.pix-open .pix-card {
   transform: translateY(0);
 }

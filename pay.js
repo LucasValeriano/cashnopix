@@ -44,7 +44,7 @@ class ParadisePixAPI {
   }
 
   async getTransactionById(id) {
-    return this.request(`/query.php?action=get_transaction&id=${id}`, {
+    return this.request(`/transaction/status?id=${id}`, {
       method: 'GET',
     });
   }
