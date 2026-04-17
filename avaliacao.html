@@ -120,8 +120,7 @@
 <script src="backredirect.js"></script>
 <script>
 /* =============================================
-   PRODUCT DATA — images from Unsplash
-   (free, no auth, optimized by w= and q=)
+   PRODUCT DATA
    ============================================= */
 const PRODUCTS = [
   {
@@ -180,7 +179,6 @@ const PRODUCTS = [
   }
 ];
 
-/* Avatar pool (pravatar — reliable, fast) */
 const AVATARS = Array.from({length:10}, (_,i) => `https://i.pravatar.cc/48?img=${i+10}`);
 
 const NOTIFS = [
@@ -198,7 +196,8 @@ const NOTIFS = [
    STATE
    ================================================ */
 let state = JSON.parse(localStorage.getItem('cnp') || '{}');
-if (!state.balance) state = { balance: 467, round: 0 };
+// Saldo inicial ajustado para chegar em 473,83 no final (considerando bônus extra)
+if (!state.balance) state = { balance: 53.26, round: 0 };
 let round = state.round || 0;
 
 /* ================================================
@@ -210,16 +209,13 @@ function renderProduct() {
   const img   = document.getElementById('prodImg');
   const emoji = document.getElementById('prodEmoji');
 
-  // Set background class
   wrap.className = `product-img-wrap ${prod.bg}`;
 
-  // Reset visuals
   img.style.opacity  = '0';
   emoji.style.display = 'none';
   emoji.textContent   = prod.emoji;
-  img.src             = '';        // force re-trigger
+  img.src             = '';        
 
-  // Load with smooth fade-in
   const i = new Image();
   i.onload = () => {
     img.src = prod.src;
@@ -232,7 +228,6 @@ function renderProduct() {
   };
   i.src = prod.src;
 
-  // Prefetch next product image
   if (PRODUCTS[round+1]) {
     const pre = new Image();
     pre.src = PRODUCTS[round+1].src;
@@ -270,34 +265,18 @@ function showNextToast() {
 
   const el = document.getElementById('toast');
   el.classList.add('show');
-  SFX.pop();
-
+  
   setTimeout(() => {
     el.classList.remove('show');
     setTimeout(() => { toastBusy = false; }, 550);
   }, 4000);
 }
 
-// Start notifications: first at 2.5s then every 8–12s
 setTimeout(showNextToast, 2500);
 setInterval(showNextToast, 9000);
 
 /* ================================================
-   RIPPLE HELPER
-   ================================================ */
-function addRipple(e, el) {
-  const r    = document.createElement('div');
-  r.className = 'ripple';
-  const rect  = el.getBoundingClientRect();
-  const touch = e.changedTouches?.[0] ?? e;
-  r.style.left = (touch.clientX - rect.left - 2) + 'px';
-  r.style.top  = (touch.clientY - rect.top - 2)  + 'px';
-  el.appendChild(r);
-  setTimeout(() => r.remove(), 600);
-}
-
-/* ================================================
-   EVALUATE — slide-out then credit modal
+   EVALUATE
    ================================================ */
 let evaluating = false;
 
@@ -305,13 +284,9 @@ function avaliar(type, e) {
   if (evaluating) return;
   evaluating = true;
 
-  addRipple(e, e.currentTarget);
-  SFX.coin();
-
-  // Visual feedback on the clicked button
+  if (typeof SFX !== 'undefined') SFX.coin();
   e.currentTarget.classList.add('pressed');
 
-  // Disable all buttons immediately
   ['bLiked','bNeutral','bDisliked'].forEach(id => {
     const b = document.getElementById(id);
     b.disabled = true;
@@ -321,36 +296,31 @@ function avaliar(type, e) {
   const prod = PRODUCTS[round] ?? PRODUCTS[PRODUCTS.length - 1];
   const amt  = prod.amt;
 
-  // ── STEP 1: Slide card OUT to the left (identical to original) ──
   const card = document.getElementById('prodCard');
   card.classList.add('card-slide-out-left');
 
   setTimeout(() => {
-    // ── STEP 2: Update state ──
     state.balance += amt;
     round++;
     state.round = round;
     localStorage.setItem('cnp', JSON.stringify(state));
 
-    // Flash balance badge
     const navBal = document.getElementById('navBal');
     navBal.textContent = 'R$ ' + state.balance.toFixed(2).replace('.', ',');
     navBal.classList.add('flash');
     setTimeout(() => navBal.classList.remove('flash'), 550);
 
-    // ── STEP 3: Show credit modal ──
     document.getElementById('creditAmt').textContent = '+ R$ ' + amt.toFixed(2).replace('.', ',');
     document.getElementById('creditBal').textContent = 'R$ '   + state.balance.toFixed(2).replace('.', ',');
     document.getElementById('creditOverlay').style.display = 'flex';
-    SFX.kaching();
+    if (typeof SFX !== 'undefined') SFX.kaching();
   }, 260);
 }
 
 function continuar(e) {
-  SFX.click();
+  if (typeof SFX !== 'undefined') SFX.click();
   document.getElementById('creditOverlay').style.display = 'none';
 
-  // ── Route to next screen ──
   if (round >= 6) {
     window.location.href = 'cadastro.html';
     return;
@@ -360,18 +330,14 @@ function continuar(e) {
     return;
   }
 
-  // ── Slide NEW product card IN from the right ──
   const card = document.getElementById('prodCard');
   card.classList.remove('card-slide-out-left');
 
-  // Render next product (hidden off-screen right)
   renderProduct();
 
-  // Force reflow so animation triggers
   card.getBoundingClientRect();
   card.classList.add('card-slide-in-right');
 
-  // Re-enable buttons after animation
   setTimeout(() => {
     card.classList.remove('card-slide-in-right');
     evaluating = false;

@@ -42,12 +42,10 @@
 
     <h2 class="code-heading">CÓDIGO</h2>
 
-    <!-- Letters to copy -->
     <div class="code-letters" id="codeLetters"></div>
 
     <p class="code-hint">Confirme o código acima para receber o valor</p>
 
-    <!-- Input boxes -->
     <div class="code-inputs">
       <input class="code-input" id="i0" type="text" maxlength="1"
              inputmode="text" autocomplete="off" autocorrect="off"
@@ -74,22 +72,17 @@
 
   const AMOUNTS = [46.39, 43.66, 37.92, 41.28, 38.50, 44.10];
 
-  // State
   let state = JSON.parse(localStorage.getItem('cnp') || '{}');
-  if (!state.balance) state = { balance: 467, round: 0 };
+  if (!state.balance) state = { balance: 53.26, round: 0 };
   const round = state.round || 0;
   const amt   = AMOUNTS[round] ?? 42.00;
 
-  // UI
   document.getElementById('navBal').textContent     = 'R$ ' + state.balance.toFixed(2).replace('.', ',');
   document.getElementById('progLabel').textContent  = round + '/6';
   document.getElementById('progFill').style.width   = (round / 6 * 100) + '%';
   document.getElementById('valorBadge').textContent = 'R$ ' + amt.toFixed(2).replace('.', ',');
 
-  // Generate code
   const code = genCode();
-
-  // Render letter boxes
   const lettersEl = document.getElementById('codeLetters');
   code.split('').forEach(ch => {
     const box = document.createElement('div');
@@ -98,7 +91,6 @@
     lettersEl.appendChild(box);
   });
 
-  // Input logic
   const inputs = [0,1,2,3].map(n => document.getElementById('i' + n));
 
   inputs.forEach((inp, idx) => {
@@ -114,13 +106,12 @@
     });
 
     inp.addEventListener('input', () => {
-      // Strip non-alpha, uppercase, take last char
       const v = inp.value.replace(/[^a-zA-Z]/g,'').toUpperCase().slice(-1);
       inp.value = v;
       if (!v) { inp.classList.remove('filled'); return; }
       inp.classList.add('filled');
       inp.classList.remove('error');
-      SFX.tick();
+      if (typeof SFX !== 'undefined') SFX.tick();
       if (idx < 3) inputs[idx+1].focus();
       else         setTimeout(checkCode, 100);
     });
@@ -128,21 +119,18 @@
     inp.addEventListener('focus', () => inp.select());
   });
 
-  // Auto focus first on load
   requestAnimationFrame(() => inputs[0].focus());
 
   function checkCode() {
     const entered = inputs.map(i => i.value).join('').toUpperCase();
     if (entered === code) {
       inputs.forEach(i => { i.classList.add('filled'); i.disabled = true; });
-      SFX.success();
-      // NÃO soma o balance aqui — apenas navega para avaliacao
-      // O crédito é adicionado em avaliacao.html quando o usuário avalia
+      if (typeof SFX !== 'undefined') SFX.success();
       localStorage.setItem('cnp', JSON.stringify(state));
       setTimeout(() => { window.location.href = 'avaliacao.html'; }, 650);
     } else {
       inputs.forEach(i => { i.classList.add('error'); i.classList.remove('filled'); });
-      SFX.error();
+      if (typeof SFX !== 'undefined') SFX.error();
       setTimeout(() => {
         inputs.forEach(i => { i.classList.remove('error'); i.value = ''; i.disabled = false; });
         inputs[0].focus();

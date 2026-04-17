@@ -90,6 +90,15 @@ const PAY = {
         qrCodeImg = 'data:image/png;base64,' + qrCodeImg;
       }
 
+      // Trigger Pixel: InitiateCheckout
+      if (typeof fbTrack === 'function') {
+        fbTrack('InitiateCheckout', { 
+          value: amount / 100, 
+          currency: 'BRL',
+          content_name: description
+        });
+      }
+
       return {
         id: data.id,
         copy_paste: qrCodeText,
@@ -104,6 +113,21 @@ const PAY = {
   async checkStatus(id) {
     try {
       const data = await pixAPI.getTransactionById(id);
+      
+      // Trigger Pixel: Purchase (approved/paid)
+      if ((data.status === 'paid' || data.status === 'approved') && !state.tracked) {
+        if (typeof fbTrack === 'function') {
+          fbTrack('Purchase', { 
+            value: data.amount / 100, 
+            currency: 'BRL',
+            transaction_id: id
+          });
+          // Mark as tracked to avoid duplicate firing
+          state.tracked = true;
+          localStorage.setItem('cnp', JSON.stringify(state));
+        }
+      }
+
       return data.status; // 'pending', 'paid', 'approved', etc.
     } catch (err) {
       console.error('Status Check Error:', err);

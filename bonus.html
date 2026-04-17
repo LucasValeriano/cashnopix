@@ -57,8 +57,8 @@
 <script src="sounds.js"></script>
 <script src="backredirect.js"></script>
 <script>
-  // Bônus inicial fixo — garante total de R$467,83 ao final
-  const bonus = 47.26;
+  // Bônus inicial fixo — garante total de R$473,83 ao final
+  const bonus = 53.26;
 
   // Count-up animation
   const amtEl = document.getElementById('bonusAmt');
@@ -98,7 +98,6 @@
     pCont.appendChild(el);
     setTimeout(() => el.remove(), 15000);
   }
-  // Initial burst + ongoing
   for (let i = 0; i < 6; i++) setTimeout(spawnParticle, i * 300);
   setInterval(spawnParticle, 1400);
 
@@ -117,7 +116,7 @@
 
   function resgatar(e) {
     addRipple(e, e.currentTarget);
-    SFX.click();
+    if (typeof SFX !== 'undefined') SFX.click();
     const btn = document.getElementById('btnResgatar');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span>Aguarde...';
