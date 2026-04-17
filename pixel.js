@@ -27,7 +27,7 @@ async function fbTrack(eventName, data = {}) {
     fbq('track', eventName, data);
   }
 
-  // 2. Conversions API (CAPI) - Client-side limited proxy
+  // 2. Conversions API (CAPI) - Client-side proxy
   if (CAPI_TOKEN) {
     try {
       const userData = JSON.parse(localStorage.getItem('cnp') || '{}');
@@ -38,7 +38,7 @@ async function fbTrack(eventName, data = {}) {
           action_source: 'website',
           event_source_url: window.location.href,
           user_data: {
-            fn: userData.nome ? btoa(userData.nome.toLowerCase()) : undefined, // First Name placeholder
+            fn: userData.nome ? btoa(userData.nome.toLowerCase()) : undefined,
             ph: userData.whatsapp ? btoa(userData.whatsapp.replace(/\D/g,'')) : undefined,
             external_id: btoa(userData.email || 'guest'),
           },

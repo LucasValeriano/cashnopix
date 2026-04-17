@@ -335,7 +335,7 @@
       document.querySelectorAll('.faq-ans').forEach(a => a.classList.remove('open'));
       document.querySelectorAll('.faq-ico').forEach(i => i.classList.remove('open'));
       if (!open) { ans.classList.add('open'); ico.classList.add('open'); }
-      SFX.tick();
+      if (typeof SFX !== 'undefined') SFX.tick();
     }
 
     /* ============== PIX MODAL ============== */
@@ -351,17 +351,14 @@
       const copyBtn    = document.getElementById('copyBtn');
       const ctaBtn     = document.getElementById('ctaBtn');
 
-      // Prevents multiple clicks
       if (ctaBtn.disabled) return;
       
       const originalText = ctaBtn.innerHTML;
       ctaBtn.disabled = true;
       ctaBtn.innerHTML = '<span class="spinner"></span> GERANDO SEU PIX...';
 
-      // Atualiza valor na tela do modal
       if (valDisplay) valDisplay.textContent = 'R$ ' + valor.toFixed(2).replace('.', ',');
 
-      // Reset do estado visual
       pixCode.innerText = 'Gerando seu PIX...';
       qrCont.style.display = 'none';
       copyBtn.disabled = true;
@@ -377,7 +374,6 @@
           qrCont.style.display = 'block';
         }
 
-        // Abre o bottom sheet após gerar o PIX
         overlay.classList.add('pix-open');
         document.body.style.overflow = 'hidden';
 
@@ -393,7 +389,6 @@
         ctaBtn.innerHTML = originalText;
       }
     }
-    // Expor para o backredirect.js usar
     window.abrirPix = abrirPix;
 
     function iniciarTimer(duration) {
@@ -414,8 +409,10 @@
         const status = await PAY.checkStatus(id);
         if (status === 'paid' || status === 'approved' || status === 'completed') {
           clearInterval(pollingInterval);
-          PAY.trackPixel('Purchase', { value: valorPago, currency: 'BRL', content_name: 'Taxa CashNoPix' });
-          SFX.success();
+          if (typeof fbTrack === 'function') {
+            fbTrack('Purchase', { value: valorPago, currency: 'BRL', content_name: 'Taxa CashNoPix' });
+          }
+          if (typeof SFX !== 'undefined') SFX.success();
           setTimeout(() => { window.location.href = 'sucesso.html'; }, 1000);
         }
       }, 5000);
@@ -428,12 +425,10 @@
       if (timerInterval)  clearInterval(timerInterval);
     }
 
-    // Fechar ao clicar no backdrop
     document.getElementById('pixOverlay').addEventListener('click', e => {
       if (e.target === document.getElementById('pixOverlay')) fecharPix();
     });
 
-    // Swipe down para fechar (mobile)
     let touchStartY = 0;
     document.getElementById('pixCard').addEventListener('touchstart', e => {
       touchStartY = e.changedTouches[0].clientY;
@@ -450,7 +445,7 @@
       function onCopied() {
         btn.textContent = '✅ Copiado com sucesso!';
         btn.classList.add('copied');
-        SFX.copied();
+        if (typeof SFX !== 'undefined') SFX.copied();
         setTimeout(() => {
           btn.textContent = '📋 Copiar Chave PIX';
           btn.classList.remove('copied');
@@ -476,7 +471,7 @@
   </script>
 
   <!-- ========================================================
-       PIX OVERLAY — dentro do <body> para garantir z-index
+       PIX OVERLAY
        ======================================================== -->
   <div class="pix-overlay" id="pixOverlay" role="dialog" aria-modal="true" aria-label="Pagar via PIX">
     <div class="pix-card" id="pixCard">
@@ -526,8 +521,4 @@
     </div>
   </div>
 </body>
-
-  </div>
-</div>
-
 </html>

