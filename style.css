@@ -994,13 +994,13 @@ body {
 }
 .faq-ans.open { max-height: 280px; padding-bottom: 14px; }
 
-/* Sticky CTA */
+/* Sticky CTA — fixed na parte inferior para sempre ser visivel */
 .cta-sticky {
-  position: sticky; bottom: 0;
+  position: fixed; bottom: 0; left: 0; right: 0;
   background: #fff; border-top: 1px solid var(--slate-200);
   padding: 12px var(--px);
   padding-bottom: max(12px, env(safe-area-inset-bottom));
-  z-index: 60;
+  z-index: 100;
   box-shadow: 0 -6px 28px rgba(0,0,0,0.09);
 }
 .cta-btn {

